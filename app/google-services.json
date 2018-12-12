@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "662557807725",
+    "firebase_url": "https://sc2-guide-android.firebaseio.com",
+    "project_id": "sc2-guide-android",
+    "storage_bucket": "sc2-guide-android.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:662557807725:android:8cb4cf4fc6825132",
+        "android_client_info": {
+          "package_name": "com.sc2guide.sc2_guides_android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "662557807725-8bb6ulfkcd6r1o4tvhps9vm79e48gma5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sc2guide.sc2_guides_android",
+            "certificate_hash": "f11dc7a6b9781619a1fc7333695f1c46cebf60e7"
+          }
+        },
+        {
+          "client_id": "662557807725-e16vb78lkh8pjhi9f1076q6n2p6n9p08.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA01IbE2C6qZREre96kxwPMNca3WwzuDSc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "662557807725-e16vb78lkh8pjhi9f1076q6n2p6n9p08.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
