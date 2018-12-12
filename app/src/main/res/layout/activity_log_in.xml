@@ -4,43 +4,38 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.auth.SignUpActivity">
-
+    tools:context=".view.auth.LogInActivity">
+    <!-- -->
     <EditText
-        android:id="@+id/edit_text_email"
+        android:id="@+id/log_in_email"
         android:inputType="textEmailAddress"
         android:hint="Your email here..."
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <EditText
-        android:id="@+id/edit_text_password"
-        app:layout_constraintTop_toBottomOf="@+id/edit_text_email"
-        android:inputType="textPassword"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/log_in_password_label"
+        android:text="Password"
+        android:labelFor="@+id/log_in_password"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <TextView
-        android:id="@+id/sign_up_log_in"
-        android:text="Already have an account? Log In here"
-        android:layout_width="wrap_content"
+    <EditText
+        android:id="@+id/log_in_password"
+        app:layout_constraintTop_toBottomOf="@+id/log_in_email"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="onSignedClick"
-        android:clickable="true"
-        android:focusable="false"/>
+        android:inputType="textPassword"/>
 
-    <!-- TODO: change layout later-->
     <LinearLayout
-        app:layout_constraintTop_toBottomOf="@+id/edit_text_password"
+        app:layout_constraintTop_toBottomOf="@+id/log_in_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center">
         <Button
-            android:id="@+id/sign_up_button"
+            android:id="@+id/log_in_button"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:text="Button" />
     </LinearLayout>
-
-
 </android.support.constraint.ConstraintLayout>

@@ -23,8 +23,7 @@ public class SignUpActivity extends AppCompatActivity {
 
     private EditText editTxtEmail;
     private EditText editTxtPassword;
-
-    private Button sign_up_btn;
+    private Button signUpBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,9 +33,9 @@ public class SignUpActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         editTxtEmail = findViewById(R.id.edit_text_email);
         editTxtPassword = findViewById(R.id.edit_text_password);
-        sign_up_btn = findViewById(R.id.sign_up_button);
+        signUpBtn = findViewById(R.id.sign_up_button);
 
-        sign_up_btn.setOnClickListener(new View.OnClickListener() {
+        signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 handleSignUp(v);
@@ -58,6 +57,11 @@ public class SignUpActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void onSignedClick (View v) {
+        intent = new Intent(SignUpActivity.this, LogInActivity.class);
+        startActivity(intent);
     }
 
     private void handleSignUp(View v) {
