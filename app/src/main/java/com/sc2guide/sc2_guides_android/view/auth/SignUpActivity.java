@@ -31,15 +31,10 @@ public class SignUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
         //
-        ab = getSupportActionBar();
-        ab.setTitle("Sign up");
-        ab.setSubtitle("Join the sc2 guides community");
+        setUpActionBar();
         //
-        mAuth = new FirebaseAuthService();
-        editTxtEmail = findViewById(R.id.sign_up_email);
-        editTxtPassword = findViewById(R.id.sign_up_password);
-        signUpBtn = findViewById(R.id.sign_up_button);
-        //
+        setUpVarMap();
+        // set action of clicking sign up button -> register account
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -48,11 +43,42 @@ public class SignUpActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * @effects: Navigate to LoginActivity
+     * @param v
+     */
     public void onLinkLogIn (View v) {
         intent = new Intent(SignUpActivity.this, LogInActivity.class);
         startActivity(intent);
     }
 
+    /**
+     * @effects: set up the mapping of variables in layout
+     */
+    private void setUpVarMap () {
+        mAuth = new FirebaseAuthService();
+        editTxtEmail = findViewById(R.id.sign_up_email);
+        editTxtPassword = findViewById(R.id.sign_up_password);
+        signUpBtn = findViewById(R.id.sign_up_button);
+    }
+
+    /**
+     * @effects: set up the action bar settings;
+     */
+    private void setUpActionBar () {
+        ab = getSupportActionBar();
+        ab.setTitle("Sign up");
+        ab.setSubtitle("Join the sc2 guides community");
+    }
+
+    /**
+     * @effects:
+     *      on click sign up button
+     *      => call to firebase serivce
+     *          success => navigate to MainActivity
+     *          fail => Toast.make notice
+     * @param v
+     */
     private void handleSignUp(View v) {
         String email = editTxtEmail.getText().toString();
         String password = editTxtPassword.getText().toString();

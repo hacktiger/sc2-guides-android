@@ -38,14 +38,9 @@ public class LogInActivity extends AppCompatActivity {
         mAuth = new FirebaseAuthService();
         // Action Bar
         // TODO: Right way to get action bar title
-        ab = getSupportActionBar();
-        ab.setTitle("Log In");
-        ab.setSubtitle("Login to start exploring sc2 guides");
+        setUpActionBar();
         //
-        editTxtEmail = findViewById(R.id.log_in_email);
-        editTxtPassword = findViewById(R.id.log_in_password);
-        logInBtn = findViewById(R.id.log_in_button);
-        spinner = findViewById(R.id.log_in_spinner);
+        setUpVarMap ();
         //
         logInBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,6 +62,24 @@ public class LogInActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed () {
+        // do nothing
+    }
+
+    private void setUpVarMap () {
+        editTxtEmail = findViewById(R.id.log_in_email);
+        editTxtPassword = findViewById(R.id.log_in_password);
+        logInBtn = findViewById(R.id.log_in_button);
+        spinner = findViewById(R.id.log_in_spinner);
+    }
+
+    private void setUpActionBar () {
+        ab = getSupportActionBar();
+        ab.setTitle("Log In");
+        ab.setSubtitle("Login to start exploring sc2 guides");
+    }
+
     public void updateUI() {
         logInBtn.setVisibility(View.INVISIBLE);
         spinner.setVisibility(View.VISIBLE);
@@ -76,21 +89,21 @@ public class LogInActivity extends AppCompatActivity {
         // TODO: add Spinner while loading in here + sign up + other places
 
         // Actual log in
-//        String email = editTxtEmail.getText().toString();
-//        String password = editTxtPassword.getText().toString();
-//        // sign in with firebase
-//        mAuth.getFirebase().signInWithEmailAndPassword(email, password)
-//                .addOnCompleteListener(LogInActivity.this, new OnCompleteListener<AuthResult>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<AuthResult> task) {
-//                        if (task.isSuccessful()) {
-//                            intent = new Intent(LogInActivity.this, MainActivity.class);
-//                            startActivity(intent);
-//                        } else {
-//                            Toast.makeText(LogInActivity.this, "Wrong", Toast.LENGTH_SHORT).show();
-//                        }
-//                    }
-//                });
+        String email = editTxtEmail.getText().toString();
+        String password = editTxtPassword.getText().toString();
+        // sign in with firebase
+        mAuth.getFirebase().signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(LogInActivity.this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            intent = new Intent(LogInActivity.this, MainActivity.class);
+                            startActivity(intent);
+                        } else {
+                            Toast.makeText(LogInActivity.this, "Wrong", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
     public void onLinkSignUp(View v) {
