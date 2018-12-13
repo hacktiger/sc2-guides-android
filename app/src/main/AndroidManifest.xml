@@ -16,11 +16,15 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name"
+            android:label="@string/app_bar_main"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".view.auth.SignUpActivity">
+        <activity
+            android:name=".view.auth.SignUpActivity"
+            android:label="@string/app_bar_signup">
         </activity>
-        <activity android:name=".view.auth.LogInActivity">
+        <activity
+            android:name=".view.auth.LogInActivity"
+            android:label="@string/app_bar_login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
