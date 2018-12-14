@@ -1,11 +1,13 @@
 package com.sc2guide.sc2_guides_android.view.auth;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -34,6 +36,9 @@ public class SignUpActivity extends AppCompatActivity {
         setUpActionBar();
         //
         setUpVarMap();
+        //
+        setUpHideKeyBoard();
+        //
         // set action of clicking sign up button -> register account
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -41,6 +46,38 @@ public class SignUpActivity extends AppCompatActivity {
                 handleSignUp(v);
             }
         });
+    }
+
+    /**
+     * @effects: hide key board when click outside of the edit text
+     */
+    private void setUpHideKeyBoard() {
+        editTxtEmail.setOnFocusChangeListener(new View.OnFocusChangeListener(){
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+
+        editTxtPassword.setOnFocusChangeListener(new View.OnFocusChangeListener(){
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+    }
+
+    /**
+     * @effects : hide soft keyboard
+     * @param view
+     */
+    public void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     /**
@@ -90,9 +127,11 @@ public class SignUpActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             intent = new Intent(SignUpActivity.this, MainActivity.class);
                             startActivity(intent);
+                            finish();
                         } else {
                             // If sign in fails, display a message to the user.
-                            Toast.makeText(SignUpActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                            String errMess = task.getException().getMessage();
+                            Toast.makeText(SignUpActivity.this, "Error : " + errMess, Toast.LENGTH_SHORT).show();
                         }
 
                     }

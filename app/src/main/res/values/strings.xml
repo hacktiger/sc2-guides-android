@@ -3,11 +3,9 @@
     <!-- Strings for drawer navigation -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
 
-    <string name = "nav_all_guides">All Guides</string>
+    <string name="nav_all_guides">All Guides</string>
     <string name="nav_zerg_guides">Zerg Guides</string>
     <string name="nav_protoss_guides">Protoss Guides</string>
     <string name="nav_terran_guides">Terran Guides</string>
@@ -33,4 +31,17 @@
     <string name="hint_email">Your bank account...</string>
     <string name="signup">Sign Up</string>
     <string name="link_log_in">Already have an account? Click here to log in</string>
+
+    <string name="zerg_fragment">Hello zerg fragment</string>
+    <string name="nav_header_title">Header</string>
+    <string name="nav_header_subtitle">Subtitle</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="submit">Submit</string>
+
+    <string-array name="race_option">
+        <item name="race_option_zerg">Zerg</item>
+        <item name="race_option_protoss">Protoss</item>
+        <item name="race_option_terran">Terran</item>
+    </string-array>
 </resources>

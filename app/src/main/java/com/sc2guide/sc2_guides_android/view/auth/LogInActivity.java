@@ -1,10 +1,12 @@
 package com.sc2guide.sc2_guides_android.view.auth;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -42,6 +44,8 @@ public class LogInActivity extends AppCompatActivity {
         //
         setUpVarMap ();
         //
+        setUpHideKeyBoard();
+        //
         logInBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -49,6 +53,38 @@ public class LogInActivity extends AppCompatActivity {
                 handleLogIn(v);
             }
         });
+    }
+
+    /**
+     * @effects: hide key board when click outside of the edit text
+     */
+    private void setUpHideKeyBoard() {
+        editTxtEmail.setOnFocusChangeListener(new View.OnFocusChangeListener(){
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+
+        editTxtPassword.setOnFocusChangeListener(new View.OnFocusChangeListener(){
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+    }
+
+    /**
+     * @effects : hide soft keyboard
+     * @param view
+     */
+    public void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     @Override
@@ -99,8 +135,10 @@ public class LogInActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             intent = new Intent(LogInActivity.this, MainActivity.class);
                             startActivity(intent);
+                            finish();
                         } else {
-                            Toast.makeText(LogInActivity.this, "Wrong", Toast.LENGTH_SHORT).show();
+                            String errMess = task.getException().getMessage();
+                            Toast.makeText(LogInActivity.this, "Error : " + errMess, Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -111,4 +149,6 @@ public class LogInActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
+
+
 }

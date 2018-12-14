@@ -4,17 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.auth.LogInActivity">
+    tools:context=".view.auth.LogInActivity"
+    android:clickable="true"
+    android:focusableInTouchMode="true"
+    >
 
     <!-- TODO: add background color -->
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
-
-        <LinearLayout
+    <LinearLayout
+            android:fitsSystemWindows="true"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
             android:paddingLeft="24dp"
             android:paddingTop="56dp"
@@ -61,12 +60,11 @@
             <android.support.v7.widget.AppCompatButton
                 android:id="@+id/log_in_button"
                 android:background="@android:color/holo_purple"
-                android:backgroundTint="@color/colorAccent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="24dp"
-                android:paddingRight="12dp"
+                android:paddingEnd="12dp"
                 android:text="@string/login"
                 android:textColor="@android:color/white"/>
             <TextView
@@ -80,15 +78,17 @@
                 android:onClick="onLinkSignUp"
                 android:clickable="true"
                 android:focusable="false"/>
+
+            <ProgressBar
+                android:id="@+id/log_in_spinner"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:visibility="invisible"
+                tools:layout_editor_absoluteX="154dp"
+                tools:layout_editor_absoluteY="419dp" />
         </LinearLayout>
 
 
-    </ScrollView>
-    <ProgressBar
-        android:id="@+id/log_in_spinner"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:visibility="invisible" />
 </android.support.constraint.ConstraintLayout>
