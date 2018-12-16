@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".view.guides.CreateGuideFragment">
+
+    <LinearLayout
+        android:clickable="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:fitsSystemWindows="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="24dp"
+        android:paddingTop="24dp"
+        android:paddingRight="24dp">
+
+        <TextView
+            android:text="CREATE YOUR SC2 GUIDE"
+            android:gravity="center_horizontal"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/create_guide_spinner_label_my_race"
+            android:text="Choose your race"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"/>
+
+        <Spinner
+            android:id="@+id/create_guide_spinner_my_race"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+
+        <TextView
+            android:id="@+id/create_guide_spinner_label_enemy_race"
+            android:text="Opponent Race"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"/>
+
+        <Spinner
+            android:id="@+id/create_guide_spinner_enemy_race"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- EMAIL -->
+        <!-- Label -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="8dp"
+            >
+
+            <EditText
+                android:id="@+id/create_guide_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/guide_title_hint"
+                android:inputType="text" />
+        </android.support.design.widget.TextInputLayout>
+
+        <!-- Password Label -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
+
+            <EditText
+                android:id="@+id/create_guide_body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/create_guide_body"
+                android:inputType="textMultiLine"
+                android:lines="10"
+                android:gravity="top|left"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/create_guide_button"
+            android:background="@android:color/holo_green_light"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp"
+            android:paddingEnd="12dp"
+            android:text="@string/create_guide"
+            android:textColor="@android:color/white"/>
+
+        <ProgressBar
+            android:id="@+id/create_guide_progress"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:indeterminate="true"
+            android:visibility="invisible"
+            style="?android:attr/progressBarStyleHorizontal" />
+    </LinearLayout>
+
+</ScrollView>
