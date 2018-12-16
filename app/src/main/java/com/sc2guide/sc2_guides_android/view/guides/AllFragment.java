@@ -4,7 +4,11 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +17,7 @@ import android.widget.Toast;
 
 import com.sc2guide.sc2_guides_android.MainActivity;
 import com.sc2guide.sc2_guides_android.R;
+import com.sc2guide.sc2_guides_android.adapter.GuideAdapter;
 import com.sc2guide.sc2_guides_android.data.model.Guide;
 import com.sc2guide.sc2_guides_android.viewmodel.AllGuideViewModel;
 
@@ -36,6 +41,7 @@ public class AllFragment extends Fragment {
     private String mParam2;
 
     private AllGuideViewModel mViewModel;
+    private GuideAdapter adapter;
 
     private OnFragmentInteractionListener mListener;
 
@@ -67,19 +73,11 @@ public class AllFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
-        mViewModel = ViewModelProviders.of(this).get(AllGuideViewModel.class);
-        mViewModel.getAllGuides().observe(this, guide -> {
-            updateUI(guide);
-        });
     }
 
     private void updateUI(List<Guide> guide) {
-        // TODO: updateUI for real
-        Toast.makeText(getActivity(), "UPDATED UI", Toast.LENGTH_SHORT).show();
-        for (Guide item : guide) {
-            Log.d("ALLGUIDES" + item.getTitle(), "AA" + item.getBody());
-        }
+        //
+        adapter.setGuides(guide);
     }
 
     @Override
@@ -89,7 +87,23 @@ public class AllFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_all, container, false);
     }
 
-
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        // TODO: add progress bar for loading
+        // recyler view of the fragment
+        RecyclerView recyclerView = getView().findViewById(R.id.all_guides_recycler);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setHasFixedSize(true);
+        // adapter
+        adapter = new GuideAdapter();
+        recyclerView.setAdapter(adapter);
+        // get data from view model
+        mViewModel = ViewModelProviders.of(this).get(AllGuideViewModel.class);
+        mViewModel.getAllGuides().observe(this, guide -> {
+            updateUI(guide);
+        });
+    }
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
