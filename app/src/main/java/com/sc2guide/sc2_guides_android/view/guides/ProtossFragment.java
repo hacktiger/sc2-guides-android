@@ -73,12 +73,18 @@ public class ProtossFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         // recyler view of the fragment
         RecyclerView recyclerView = getView().findViewById(R.id.all_guides_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
         // adapter
-        adapter = new GuideAdapter();
+        adapter = new GuideAdapter( new GuideAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Guide guide) {
+                Toast.makeText(getContext(), "Clicked", Toast.LENGTH_SHORT).show();
+            }
+        });
         recyclerView.setAdapter(adapter);
         // get data from view model
         mViewModel = ViewModelProviders.of(this).get(RaceGuideViewModel.class);

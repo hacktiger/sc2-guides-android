@@ -33,13 +33,6 @@ import java.util.List;
  */
 // TODO: change the defaults of the fragment later
 public class AllFragment extends Fragment {
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    private String mParam1;
-    private String mParam2;
-
     private AllGuideViewModel mViewModel;
     private GuideAdapter adapter;
 
@@ -60,23 +53,12 @@ public class AllFragment extends Fragment {
     public static AllFragment newInstance(String param1, String param2) {
         AllFragment fragment = new AllFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        //
         fragment.setArguments(args);
         return fragment;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
     private void updateUI(List<Guide> guide) {
-        //
         adapter.setGuides(guide);
     }
 
@@ -96,13 +78,19 @@ public class AllFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
         // adapter
-        adapter = new GuideAdapter();
+        adapter = new GuideAdapter( new GuideAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Guide guide) {
+                Toast.makeText(getContext(), "Clicked", Toast.LENGTH_SHORT).show();
+            }
+        });
         recyclerView.setAdapter(adapter);
         // get data from view model
         mViewModel = ViewModelProviders.of(this).get(AllGuideViewModel.class);
         mViewModel.getAllGuides().observe(this, guide -> {
             updateUI(guide);
         });
+
     }
 
     public void onButtonPressed(Uri uri) {

@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.sc2guide.sc2_guides_android.MainActivity;
 import com.sc2guide.sc2_guides_android.R;
@@ -97,7 +98,12 @@ public class ZergFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
         // adapter
-        adapter = new GuideAdapter();
+        adapter = new GuideAdapter( new GuideAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Guide guide) {
+                Toast.makeText(getContext(), "Clicked", Toast.LENGTH_SHORT).show();
+            }
+        });
         recyclerView.setAdapter(adapter);
         // get data from view model
         mViewModel = ViewModelProviders.of(this).get(RaceGuideViewModel.class);
