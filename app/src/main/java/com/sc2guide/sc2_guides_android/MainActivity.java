@@ -58,8 +58,6 @@ public class MainActivity extends AppCompatActivity
     private FragmentTransaction transaction;
     private ActionBarDrawerToggle toggle;
 
-    private AllGuideViewModel mViewModel;
-
     private FirebaseAuthService mAuth;
 
     public FloatingActionButton getFab() {
@@ -92,18 +90,8 @@ public class MainActivity extends AppCompatActivity
             transaction.add(R.id.fragment_container, new ErrorFragment());
             transaction.add(R.id.fragment_container, allFragment).commit();
         }
-
-        mViewModel = ViewModelProviders.of(this).get(AllGuideViewModel.class);
-        mViewModel.getAllGuides().observe(this, guide -> {
-            updateUI(guide);
-        });
     }
 
-    private void updateUI(List<Guide> guide) {
-        Toast.makeText(this, "UPDATE UI", Toast.LENGTH_SHORT).show();
-        Guide c =  guide.get(0);
-        Log.d("TAGGG", c.getTitle());
-    }
 
     private void setUpNavigation() {
         allFragment = new AllFragment();
@@ -230,6 +218,7 @@ public class MainActivity extends AppCompatActivity
     public String getUserId () {
         return mAuth.currentUser().getUid();
     }
+    public String getUserEmail () { return mAuth.currentUser().getEmail(); }
 
     private void setUpDrawerInfo() {
         // TODO: bind it to another vaiable here to use
