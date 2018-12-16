@@ -1,5 +1,7 @@
 package com.sc2guide.sc2_guides_android;
 
+import android.app.Activity;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -7,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -15,14 +18,22 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sc2guide.sc2_guides_android.data.model.Guide;
 import com.sc2guide.sc2_guides_android.service.FirebaseAuthService;
 import com.sc2guide.sc2_guides_android.view.auth.LogInActivity;
+import com.sc2guide.sc2_guides_android.view.common.ErrorFragment;
 import com.sc2guide.sc2_guides_android.view.guides.AllFragment;
+import com.sc2guide.sc2_guides_android.view.guides.CreateGuideFragment;
 import com.sc2guide.sc2_guides_android.view.guides.ProtossFragment;
+import com.sc2guide.sc2_guides_android.view.guides.TerranFragment;
 import com.sc2guide.sc2_guides_android.view.guides.ZergFragment;
+import com.sc2guide.sc2_guides_android.viewmodel.AllGuideViewModel;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener
@@ -34,15 +45,26 @@ public class MainActivity extends AppCompatActivity
     private AllFragment allFragment;
     private ZergFragment zergFragment;
     private ProtossFragment protossFragment;
+    private TerranFragment terranFragment;
+    private String currentFragTag;
+
+    private CreateGuideFragment createGuideFragment;
 
     private Toolbar toolbar;
     private ActionBar ab;
+    private FloatingActionButton fab;
     private NavigationView navigationView;
     private FragmentManager fragmentManager;
     private FragmentTransaction transaction;
+    private ActionBarDrawerToggle toggle;
+
+    private AllGuideViewModel mViewModel;
 
     private FirebaseAuthService mAuth;
 
+    public FloatingActionButton getFab() {
+                return fab;
+            }
 
             @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,19 +83,34 @@ public class MainActivity extends AppCompatActivity
         setUpNavigationView();
         setUpNavigation();
 
+        // showErrorDialog();
         if (findViewById(R.id.fragment_container) != null) {
             if (savedInstanceState != null) { return; }
             // set up allFragment as the first fragment to appear on activity
             allFragment.setArguments(getIntent().getExtras()); // get extra
             transaction = fragmentManager.beginTransaction(); // begin transaction + commit it
+            transaction.add(R.id.fragment_container, new ErrorFragment());
             transaction.add(R.id.fragment_container, allFragment).commit();
         }
+
+        mViewModel = ViewModelProviders.of(this).get(AllGuideViewModel.class);
+        mViewModel.getAllGuides().observe(this, guide -> {
+            updateUI(guide);
+        });
+    }
+
+    private void updateUI(List<Guide> guide) {
+        Toast.makeText(this, "UPDATE UI", Toast.LENGTH_SHORT).show();
+        Guide c =  guide.get(0);
+        Log.d("TAGGG", c.getTitle());
     }
 
     private void setUpNavigation() {
         allFragment = new AllFragment();
         zergFragment = new ZergFragment();
+        terranFragment = new TerranFragment();
         protossFragment = new ProtossFragment();
+        currentFragTag = "None";
     }
 
     // @effects: map variable to layout
@@ -95,6 +132,7 @@ public class MainActivity extends AppCompatActivity
             // back button return to previous fragment
             // but when no previous it does not return to login screen
             int backStackEntryCount = getSupportFragmentManager().getBackStackEntryCount(); // get backstack count
+
             if (backStackEntryCount != 0) {
                 super.onBackPressed();
             }
@@ -115,19 +153,15 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         // TODO: add more navigations here later
         if (id == R.id.nav_all_guides) {
-            //
-            makeTransaction(allFragment, "ALL_FRAGMENT");
+            makeTransaction(allFragment, "ALL", "ALL_GUIDE");
         } else if (id == R.id.nav_zerg_guides) {
-            // Navigate
-            makeTransaction(zergFragment, "ZERG_FRAGMENT");
+            makeTransaction(zergFragment, "ZERG", "ZERG_GUIDE");
         } else if (id == R.id.nav_protoss_guides) {
-            // Navigate
-            makeTransaction(protossFragment, "PROTOSS_FRAGMENT");
+            makeTransaction(protossFragment, "PROTOSS", "PROTOSS_GUIDE");
         } else if (id == R.id.nav_terran_guides) {
-            setActionBarInfo("Terran Guides", "Guides for flying buildings to safety");
-            // Navigate
+            makeTransaction(terranFragment, "TERRAN","TERRAN_GUIDE");
         } else if (id == R.id.nav_settings) {
-
+            // TODO: fill out
         } else if (id == R.id.nav_log_out) {
             // Sign user out of Firebase and navigate back to login activity
             mAuth.signOut();
@@ -144,17 +178,20 @@ public class MainActivity extends AppCompatActivity
      * @effects: handle drawer nav
      * @param fragment
      */
-    private void makeTransaction (Fragment fragment, String tag) {
-        // Bundle args = new Bundle();
-        // args.putInt(ZergFragment.ARG_POSITION, position)
-        // fragment.setArguments(args);
+    private void makeTransaction (Fragment fragment, String tag, String fragName) {
+        Bundle args = new Bundle();
+        args.putString("FRAGMENT_NAME", fragName);
+        fragment.setArguments(args);
+        if (currentFragTag.equalsIgnoreCase(tag)) {
+            return; //
+        }
         transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.fragment_container, fragment, tag).commit();
+        currentFragTag = tag;
         transaction.addToBackStack(null);
     }
 
     /**
-     * // TODO : hard-coded. when press back button does not change title => bad
      * @effects: Helper method to set action bar title and subtitle
      * @param title
      * @param subtitle
@@ -170,25 +207,32 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setUpFab () {
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // Navigate to create guide activity
-                startActivity(new Intent(MainActivity.this, CreateGuideActivity.class));
+                createGuideFragment = CreateGuideFragment.newInstance();
+                makeTransaction(createGuideFragment, "CREATE_GUIDE_FRAGMENT", "CREATE_GUIDE");
             }
         });
     }
 
     private void setUpDrawer () {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+
         drawer.addDrawerListener(toggle);
         toggle.syncState();
     }
 
+    public String getUserId () {
+        return mAuth.currentUser().getUid();
+    }
+
     private void setUpDrawerInfo() {
+        // TODO: bind it to another vaiable here to use
         userName.setText(mAuth.currentUser().getUid());
         userEmail.setText(mAuth.currentUser().getEmail());
     }
@@ -198,5 +242,21 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
+    }
+
+    //
+    void showErrorDialog (String title, String message) {
+        ErrorFragment newFragment = ErrorFragment.newInstance(
+                title, message);
+        newFragment.show(getSupportFragmentManager(), "dialog");
+    }
+
+    public void doPositiveClick () {
+        //
+    }
+
+    public void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

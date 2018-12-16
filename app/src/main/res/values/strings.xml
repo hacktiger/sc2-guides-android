@@ -38,6 +38,11 @@
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="submit">Submit</string>
+    <string name="alert_dialog_ok">Confirm</string>
+    <string name="alert_dialog_cancel">Cancel</string>
+    <string name="guide_title_hint">Title of the guide</string>
+    <string name="create_guide">Create Guide</string>
+    <string name="create_guide_body">What is the guide about...</string>
 
     <string-array name="race_option">
         <item name="race_option_zerg">Zerg</item>

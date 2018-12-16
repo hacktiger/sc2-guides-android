@@ -63,10 +63,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:layout_marginBottom="24dp"
+
                 android:paddingEnd="12dp"
+                android:paddingStart="12dp"
                 android:text="@string/login"
                 android:textColor="@android:color/white"/>
+            <ProgressBar
+                android:id="@+id/log_in_progress"
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:indeterminate="true"
+                android:visibility="invisible"
+                style="?android:attr/progressBarStyleHorizontal" />
             <TextView
                 android:id="@+id/link_sign_up"
                 android:layout_width="match_parent"
@@ -79,15 +87,7 @@
                 android:clickable="true"
                 android:focusable="false"/>
 
-            <ProgressBar
-                android:id="@+id/log_in_spinner"
-                style="?android:attr/progressBarStyleLarge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:visibility="invisible"
-                tools:layout_editor_absoluteX="154dp"
-                tools:layout_editor_absoluteY="419dp" />
+
         </LinearLayout>
 
 

@@ -2,6 +2,7 @@ package com.sc2guide.sc2_guides_android.view.auth;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -49,7 +50,6 @@ public class LogInActivity extends AppCompatActivity {
         logInBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateUI();
                 handleLogIn(v);
             }
         });
@@ -107,7 +107,7 @@ public class LogInActivity extends AppCompatActivity {
         editTxtEmail = findViewById(R.id.log_in_email);
         editTxtPassword = findViewById(R.id.log_in_password);
         logInBtn = findViewById(R.id.log_in_button);
-        spinner = findViewById(R.id.log_in_spinner);
+        spinner = findViewById(R.id.log_in_progress);
     }
 
     private void setUpActionBar () {
@@ -117,17 +117,21 @@ public class LogInActivity extends AppCompatActivity {
     }
 
     public void updateUI() {
-        logInBtn.setVisibility(View.INVISIBLE);
+        logInBtn.setBackgroundColor(Color.GRAY);
         spinner.setVisibility(View.VISIBLE);
     }
 
     public void handleLogIn(View v) {
-        // TODO: add Spinner while loading in here + sign up + other places
-
         // Actual log in
         String email = editTxtEmail.getText().toString();
         String password = editTxtPassword.getText().toString();
+        if ( email.isEmpty() || password.isEmpty() ) {
+            Toast.makeText(this, "Dont leave the fields empty", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        updateUI();
         // sign in with firebase
+        // TODO: check for empty input value
         mAuth.getFirebase().signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(LogInActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -138,6 +142,8 @@ public class LogInActivity extends AppCompatActivity {
                             finish();
                         } else {
                             String errMess = task.getException().getMessage();
+                            logInBtn.setBackgroundColor(Color.GREEN); // change to holo purple later
+                            spinner.setVisibility(View.INVISIBLE);
                             Toast.makeText(LogInActivity.this, "Error : " + errMess, Toast.LENGTH_SHORT).show();
                         }
                     }
