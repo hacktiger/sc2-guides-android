@@ -40,6 +40,10 @@ public class AllFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
+    private static final String ARG_PARAM1 = "FRAGMENT_NAME";
+
+    private String mParam1;
+
     public AllFragment() {
         // Required empty public constructor
     }
@@ -66,6 +70,14 @@ public class AllFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -76,6 +88,8 @@ public class AllFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ////////////////////////////////////////////////
+        Log.d("PARAMM", "mwssss" + mParam1);
+        //
         ((MainActivity) getActivity()).getProgressBar().setVisibility(View.VISIBLE);
         changeUIColors();
         // recyler view of the fragment
@@ -87,7 +101,7 @@ public class AllFragment extends Fragment {
             @Override
             public void onItemClick(Guide guide) {
                 // on click of all items
-                ((MainActivity) getActivity()).makeTransaction(new AllDetailFragment(),"DETAIL_FRAG","ALL_GUIDE_DETAIL");
+                ((MainActivity) getActivity()).makeTransaction(new GuideDetailFragment(),"DETAIL_FRAG","GUIDE_DETAIL", guide);
             }
         });
         recyclerView.setAdapter(adapter);

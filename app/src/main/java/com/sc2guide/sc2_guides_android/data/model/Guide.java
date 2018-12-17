@@ -1,6 +1,8 @@
 package com.sc2guide.sc2_guides_android.data.model;
 
-public class Guide {
+import java.io.Serializable;
+
+public class Guide implements Serializable {
 
     private String title;
     private String body;

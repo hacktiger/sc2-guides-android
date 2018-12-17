@@ -62,6 +62,7 @@ public class ProtossFragment extends Fragment {
 
     private void updateUI(List<Guide> guide) {
         adapter.setGuides(guide);
+        ((MainActivity)getActivity()).getProgressBar().setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -75,6 +76,7 @@ public class ProtossFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //
+        ((MainActivity) getActivity()).getProgressBar().setVisibility(View.VISIBLE);
         changeUIColors();
         // recyler view of the fragment
         RecyclerView recyclerView = getView().findViewById(R.id.all_guides_recycler);
@@ -84,7 +86,7 @@ public class ProtossFragment extends Fragment {
         adapter = new GuideAdapter( new GuideAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Guide guide) {
-                Toast.makeText(getContext(), "Clicked", Toast.LENGTH_SHORT).show();
+                ((MainActivity) getActivity()).makeTransaction(new GuideDetailFragment(),"DETAIL_FRAG","GUIDE_DETAIL", guide);
             }
         });
         recyclerView.setAdapter(adapter);

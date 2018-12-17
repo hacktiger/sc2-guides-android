@@ -105,7 +105,7 @@ public class ZergFragment extends Fragment {
         adapter = new GuideAdapter( new GuideAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Guide guide) {
-                Toast.makeText(getContext(), "Clicked", Toast.LENGTH_SHORT).show();
+                ((MainActivity) getActivity()).makeTransaction(new GuideDetailFragment(),"DETAIL_FRAG","GUIDE_DETAIL", guide);
             }
         });
         recyclerView.setAdapter(adapter);

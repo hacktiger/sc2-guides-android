@@ -1,16 +1,13 @@
 package com.sc2guide.sc2_guides_android;
 
 import android.app.Activity;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
-import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -22,7 +19,6 @@ import android.view.MenuItem;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.sc2guide.sc2_guides_android.data.model.Guide;
 import com.sc2guide.sc2_guides_android.service.FirebaseAuthService;
@@ -33,9 +29,6 @@ import com.sc2guide.sc2_guides_android.view.guides.CreateGuideFragment;
 import com.sc2guide.sc2_guides_android.view.guides.ProtossFragment;
 import com.sc2guide.sc2_guides_android.view.guides.TerranFragment;
 import com.sc2guide.sc2_guides_android.view.guides.ZergFragment;
-import com.sc2guide.sc2_guides_android.viewmodel.AllGuideViewModel;
-
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener
@@ -74,8 +67,6 @@ public class MainActivity extends AppCompatActivity
         fragmentManager = getSupportFragmentManager();
 
         setUpVariableMap(); // map variable to view comps
-        progressBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.all_guide_color),
-                android.graphics.PorterDuff.Mode.MULTIPLY); // TODO: does not work currently may need to put somewhere else
         setUpToolBar();// set up toolbar
         ab = getSupportActionBar(); // must be below toolbar lel
         setUpFab ();
@@ -112,6 +103,8 @@ public class MainActivity extends AppCompatActivity
         // map variable
         userName = hView.findViewById(R.id.nav_user_name);
         userEmail = hView.findViewById(R.id.nav_user_email);
+
+        progressBar = findViewById(R.id.content_main_progress);
     }
 
     @Override
@@ -144,13 +137,13 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         // TODO: add more navigations here later
         if (id == R.id.nav_all_guides) {
-            makeTransaction(allFragment, "ALL", "ALL_GUIDE");
+            makeTransaction(allFragment, "ALL", "ALL_GUIDE", null);
         } else if (id == R.id.nav_zerg_guides) {
-            makeTransaction(zergFragment, "ZERG", "ZERG_GUIDE");
+            makeTransaction(zergFragment, "ZERG", "ZERG_GUIDE", null);
         } else if (id == R.id.nav_protoss_guides) {
-            makeTransaction(protossFragment, "PROTOSS", "PROTOSS_GUIDE");
+            makeTransaction(protossFragment, "PROTOSS", "PROTOSS_GUIDE", null);
         } else if (id == R.id.nav_terran_guides) {
-            makeTransaction(terranFragment, "TERRAN","TERRAN_GUIDE");
+            makeTransaction(terranFragment, "TERRAN","TERRAN_GUIDE", null);
         } else if (id == R.id.nav_log_out) {
             // Sign user out of Firebase and navigate back to login activity
             mAuth.signOut();
@@ -166,10 +159,14 @@ public class MainActivity extends AppCompatActivity
     /**
      * @effects: handle drawer nav
      * @param fragment
+     * @param guide
      */
-    public void makeTransaction (Fragment fragment, String tag, String fragName) {
+    public void makeTransaction(Fragment fragment, String tag, String fragName, Guide guide) {
         Bundle args = new Bundle();
         args.putString("FRAGMENT_NAME", fragName);
+        if (guide != null) {
+            args.putSerializable("GUIDE_OBJECT", guide);
+        }
         fragment.setArguments(args);
         if (currentFragTag.equalsIgnoreCase(tag)) {
             return; //
@@ -202,7 +199,7 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 // Navigate to create guide activity
                 createGuideFragment = CreateGuideFragment.newInstance();
-                makeTransaction(createGuideFragment, "CREATE_GUIDE_FRAGMENT", "CREATE_GUIDE");
+                makeTransaction(createGuideFragment, "CREATE_GUIDE_FRAGMENT", "CREATE_GUIDE", null);
             }
         });
     }

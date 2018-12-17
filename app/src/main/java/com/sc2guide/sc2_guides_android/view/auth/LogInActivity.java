@@ -42,9 +42,7 @@ public class LogInActivity extends AppCompatActivity {
         // Action Bar
         // TODO: Right way to get action bar title
         setUpActionBar();
-        //
         setUpVarMap ();
-        //
         setUpHideKeyBoard();
         //
         logInBtn.setOnClickListener(new View.OnClickListener() {

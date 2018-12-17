@@ -26,7 +26,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.sc2guide.sc2_guides_android.MainActivity;
 import com.sc2guide.sc2_guides_android.R;
 import com.sc2guide.sc2_guides_android.data.model.Guide;
-import com.sc2guide.sc2_guides_android.data.model.UserModel;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -99,20 +98,21 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
 
     private void handleCreateGuide() {
         // Manage what happens if user click confirm to create guide
+        // TODO: !important migrate this to a controller or something
         String guideDatabaseReference = "guides";
 
         guideCreateBtn.setBackgroundColor(Color.GRAY);
         progressBar.setVisibility(View.VISIBLE);
 
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-
         DatabaseReference mDatabase = firebaseDatabase.getReference(guideDatabaseReference);
+
         Activity main = getActivity();
 
         String userEmail = ((MainActivity) main).getUserEmail();
         String uid = ((MainActivity) main).getUserId();
-
-        Guide guide = new Guide(guideTitle.getText().toString(), guideBody.getText().toString(), my_race, op_race ,uid, "Author");
+        // TODO: change to user name instead of email later
+        Guide guide = new Guide(guideTitle.getText().toString(), guideBody.getText().toString(), my_race, op_race ,uid, userEmail);
 
         mDatabase.push().setValue(guide).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override

@@ -2,19 +2,26 @@ package com.sc2guide.sc2_guides_android.view.auth;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.sc2guide.sc2_guides_android.data.model.User;
 import com.sc2guide.sc2_guides_android.service.FirebaseAuthService;
 import com.sc2guide.sc2_guides_android.MainActivity;
 import com.sc2guide.sc2_guides_android.R;
@@ -23,9 +30,12 @@ public class SignUpActivity extends AppCompatActivity {
     private FirebaseAuthService mAuth;
     private Intent intent;
     private ActionBar ab;
+    private ProgressBar progressBar;
 
     private EditText editTxtEmail;
     private EditText editTxtPassword;
+    private EditText editTxtName;
+    private EditText editTxtConfirmPassword;
     private Button signUpBtn;
 
     @Override
@@ -34,15 +44,14 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
         //
         setUpActionBar();
-        //
         setUpVarMap();
-        //
         setUpHideKeyBoard();
-        //
         // set action of clicking sign up button -> register account
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                signUpBtn.setBackgroundColor(0xFF888888); // GRAY
+                progressBar.setVisibility(View.VISIBLE);
                 handleSignUp(v);
             }
         });
@@ -77,7 +86,11 @@ public class SignUpActivity extends AppCompatActivity {
      */
     public void hideKeyboard(View view) {
         InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        try {
+            inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        } catch (NullPointerException e){
+            Log.d("SUAct.hideKB", "mess : " + e.getMessage());
+        }
     }
 
     /**
@@ -95,7 +108,10 @@ public class SignUpActivity extends AppCompatActivity {
     private void setUpVarMap () {
         mAuth = new FirebaseAuthService();
         editTxtEmail = findViewById(R.id.sign_up_email);
+        editTxtName = findViewById(R.id.sign_up_name);
         editTxtPassword = findViewById(R.id.sign_up_password);
+        editTxtConfirmPassword = findViewById(R.id.sign_up_confirm_password);
+        progressBar = findViewById(R.id.sign_up_progress);
         signUpBtn = findViewById(R.id.sign_up_button);
     }
 
@@ -117,9 +133,39 @@ public class SignUpActivity extends AppCompatActivity {
      * @param v
      */
     private void handleSignUp(View v) {
-        String email = editTxtEmail.getText().toString();
-        String password = editTxtPassword.getText().toString();
-        mAuth.getFirebase().createUserWithEmailAndPassword(email, password)
+        String uEmail = editTxtEmail.getText().toString();
+        String uName = editTxtName.getText().toString();
+        String uPassword = editTxtPassword.getText().toString();
+        String uConfirmPassword = editTxtConfirmPassword.getText().toString();
+        // TODO: !important MAKE A CONTROLLER FOR THIS OR SOMETHING PLEASE
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        DatabaseReference mDatabase = firebaseDatabase.getReference("users");
+
+        boolean checkPassword = validatePassword(uPassword, uConfirmPassword );
+        if(!checkPassword) {
+            Toast.makeText(this, "Passwords must match", Toast.LENGTH_SHORT).show();
+            signUpBtn.setBackgroundColor(getResources().getColor(R.color.zergPurple)); // GRAY
+            progressBar.setVisibility(View.INVISIBLE);
+            return;
+        }
+        try {
+            User user = new User(uName, uEmail);
+            mDatabase.push().setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if(task.isSuccessful()){
+                        Toast.makeText(SignUpActivity.this, "User Created", Toast.LENGTH_SHORT).show();
+                    } else {
+                        String errMess = task.getException().getMessage();
+                        Toast.makeText(SignUpActivity.this, "Error : " + errMess, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        } catch (Exception e) {
+            Toast.makeText(SignUpActivity.this, " " +  e.getMessage(), Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+        mAuth.getFirebase().createUserWithEmailAndPassword(uEmail, uPassword)
                 .addOnCompleteListener(SignUpActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -133,9 +179,18 @@ public class SignUpActivity extends AppCompatActivity {
                             String errMess = task.getException().getMessage();
                             Toast.makeText(SignUpActivity.this, "Error : " + errMess, Toast.LENGTH_SHORT).show();
                         }
-
                     }
-                });
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(SignUpActivity.this, "Something went wrong : " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+        signUpBtn.setBackgroundColor(getResources().getColor(R.color.zergPurple)); // GRAY
+        progressBar.setVisibility(View.INVISIBLE);
     }
 
+    private boolean validatePassword(String uPassword, String uConfirmPassword) {
+        return (uPassword.equals(uConfirmPassword));
+    }
 }
