@@ -2,6 +2,7 @@ package com.sc2guide.sc2_guides_android.view.guides;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -73,7 +74,8 @@ public class ProtossFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        //
+        changeUIColors();
         // recyler view of the fragment
         RecyclerView recyclerView = getView().findViewById(R.id.all_guides_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -91,6 +93,11 @@ public class ProtossFragment extends Fragment {
         mViewModel.getRaceGuides("Protoss").observe(this, guide -> {
             updateUI(guide);
         });
+    }
+
+    private void changeUIColors() {
+        ((MainActivity) getActivity()).getAb().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.protossTeal)));
+        ((MainActivity) getActivity()).gethView().setBackgroundResource(R.drawable.protoss_gradient);
     }
 
     // TODO: Rename method, update argument and hook method into UI event

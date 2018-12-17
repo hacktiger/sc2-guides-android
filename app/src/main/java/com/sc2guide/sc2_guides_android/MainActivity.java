@@ -3,6 +3,7 @@ package com.sc2guide.sc2_guides_android;
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -19,6 +20,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,15 +56,14 @@ public class MainActivity extends AppCompatActivity
     private ActionBar ab;
     private FloatingActionButton fab;
     private NavigationView navigationView;
+    private View hView;
     private FragmentManager fragmentManager;
     private FragmentTransaction transaction;
     private ActionBarDrawerToggle toggle;
+    private ProgressBar progressBar;
 
     private FirebaseAuthService mAuth;
 
-    public FloatingActionButton getFab() {
-                return fab;
-            }
 
             @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +74,8 @@ public class MainActivity extends AppCompatActivity
         fragmentManager = getSupportFragmentManager();
 
         setUpVariableMap(); // map variable to view comps
+        progressBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.all_guide_color),
+                android.graphics.PorterDuff.Mode.MULTIPLY); // TODO: does not work currently may need to put somewhere else
         setUpToolBar();// set up toolbar
         ab = getSupportActionBar(); // must be below toolbar lel
         setUpFab ();
@@ -105,7 +108,7 @@ public class MainActivity extends AppCompatActivity
     private void setUpVariableMap() {
         // get the reference in header for variable
         NavigationView headerView = findViewById(R.id.nav_view);
-        View hView = headerView.getHeaderView(0);
+        hView = headerView.getHeaderView(0);
         // map variable
         userName = hView.findViewById(R.id.nav_user_name);
         userEmail = hView.findViewById(R.id.nav_user_email);
@@ -148,8 +151,6 @@ public class MainActivity extends AppCompatActivity
             makeTransaction(protossFragment, "PROTOSS", "PROTOSS_GUIDE");
         } else if (id == R.id.nav_terran_guides) {
             makeTransaction(terranFragment, "TERRAN","TERRAN_GUIDE");
-        } else if (id == R.id.nav_settings) {
-            // TODO: fill out
         } else if (id == R.id.nav_log_out) {
             // Sign user out of Firebase and navigate back to login activity
             mAuth.signOut();
@@ -166,7 +167,7 @@ public class MainActivity extends AppCompatActivity
      * @effects: handle drawer nav
      * @param fragment
      */
-    private void makeTransaction (Fragment fragment, String tag, String fragName) {
+    public void makeTransaction (Fragment fragment, String tag, String fragName) {
         Bundle args = new Bundle();
         args.putString("FRAGMENT_NAME", fragName);
         fragment.setArguments(args);
@@ -212,6 +213,7 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 
         drawer.addDrawerListener(toggle);
+
         toggle.syncState();
     }
 
@@ -221,7 +223,7 @@ public class MainActivity extends AppCompatActivity
     public String getUserEmail () { return mAuth.currentUser().getEmail(); }
 
     private void setUpDrawerInfo() {
-        // TODO: bind it to another vaiable here to use
+        // TODO: bind it to another variable here to use
         userName.setText(mAuth.currentUser().getUid());
         userEmail.setText(mAuth.currentUser().getEmail());
     }
@@ -229,8 +231,6 @@ public class MainActivity extends AppCompatActivity
     private void setUpNavigationView () {
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-
     }
 
     //
@@ -248,4 +248,20 @@ public class MainActivity extends AppCompatActivity
         InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
-}
+
+            public FloatingActionButton getFab() {
+                return fab;
+            }
+
+            public ProgressBar getProgressBar() {
+                return progressBar;
+            }
+
+            public ActionBar getAb() {
+                return ab;
+            }
+
+            public View gethView() {
+                return hView;
+            }
+        }

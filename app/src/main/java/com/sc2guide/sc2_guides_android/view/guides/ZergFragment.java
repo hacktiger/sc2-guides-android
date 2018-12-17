@@ -2,6 +2,8 @@ package com.sc2guide.sc2_guides_android.view.guides;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -94,6 +96,8 @@ public class ZergFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         // recyler view of the fragment
+        changeUIColors();
+        //
         RecyclerView recyclerView = getView().findViewById(R.id.all_guides_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
@@ -110,6 +114,11 @@ public class ZergFragment extends Fragment {
         mViewModel.getRaceGuides("Zerg").observe(this, guide -> {
             updateUI(guide);
         });
+    }
+
+    private void changeUIColors() {
+        ((MainActivity) getActivity()).getAb().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.zergPurple)));
+        ((MainActivity) getActivity()).gethView().setBackgroundResource(R.drawable.zerg_gradient);
     }
 
     // TODO: Rename method, update argument and hook method into UI event

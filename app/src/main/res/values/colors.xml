@@ -3,4 +3,8 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="zergPurple">#800080</color>
+    <color name="protossTeal">#008080</color>
+    <color name="terranRed">#ff1a1a</color>
+    <color name="all_guide_color">#008000</color>
 </resources>

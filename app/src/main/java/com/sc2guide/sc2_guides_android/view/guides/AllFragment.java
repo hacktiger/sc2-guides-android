@@ -2,6 +2,8 @@ package com.sc2guide.sc2_guides_android.view.guides;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -60,6 +62,7 @@ public class AllFragment extends Fragment {
 
     private void updateUI(List<Guide> guide) {
         adapter.setGuides(guide);
+        ((MainActivity)getActivity()).getProgressBar().setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -72,7 +75,9 @@ public class AllFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // TODO: add progress bar for loading
+        ////////////////////////////////////////////////
+        ((MainActivity) getActivity()).getProgressBar().setVisibility(View.VISIBLE);
+        changeUIColors();
         // recyler view of the fragment
         RecyclerView recyclerView = getView().findViewById(R.id.all_guides_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -81,7 +86,8 @@ public class AllFragment extends Fragment {
         adapter = new GuideAdapter( new GuideAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Guide guide) {
-                Toast.makeText(getContext(), "Clicked", Toast.LENGTH_SHORT).show();
+                // on click of all items
+                ((MainActivity) getActivity()).makeTransaction(new AllDetailFragment(),"DETAIL_FRAG","ALL_GUIDE_DETAIL");
             }
         });
         recyclerView.setAdapter(adapter);
@@ -93,10 +99,9 @@ public class AllFragment extends Fragment {
 
     }
 
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+    private void changeUIColors() {
+        ((MainActivity) getActivity()).getAb().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.all_guide_color)));
+        ((MainActivity) getActivity()).gethView().setBackgroundResource(R.drawable.all_gradient);
     }
 
     @Override
