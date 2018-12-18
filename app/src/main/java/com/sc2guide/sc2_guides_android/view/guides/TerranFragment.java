@@ -52,7 +52,6 @@ public class TerranFragment extends Fragment {
      * @param param2 Parameter 2.
      * @return A new instance of fragment TerranFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static TerranFragment newInstance(String param1, String param2) {
         TerranFragment fragment = new TerranFragment();
         Bundle args = new Bundle();
@@ -111,7 +110,6 @@ public class TerranFragment extends Fragment {
         ((MainActivity) getActivity()).gethView().setBackgroundResource(R.drawable.terran_gradient);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -152,7 +150,6 @@ public class TerranFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 }

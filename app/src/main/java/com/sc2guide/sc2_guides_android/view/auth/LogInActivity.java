@@ -40,7 +40,6 @@ public class LogInActivity extends AppCompatActivity {
         // Firebase stuff
         mAuth = new FirebaseAuthService();
         // Action Bar
-        // TODO: Right way to get action bar title
         setUpActionBar();
         setUpVarMap ();
         setUpHideKeyBoard();
@@ -129,7 +128,6 @@ public class LogInActivity extends AppCompatActivity {
         }
         updateUI();
         // sign in with firebase
-        // TODO: check for empty input value
         mAuth.getFirebase().signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(LogInActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override

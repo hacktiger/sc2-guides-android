@@ -38,7 +38,6 @@ import com.sc2guide.sc2_guides_android.data.model.Guide;
 
 // TODO: !important : Split the firebase stuff to somewhere else
 public class CreateGuideFragment extends Fragment implements AdapterView.OnItemSelectedListener {
-    // TODO: Rename parameter arguments, choose names that match
     private Spinner spinner;
     private Spinner spinner_op;
     private ProgressBar progressBar;
@@ -63,7 +62,6 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
      *
      * @return A new instance of fragment CreateGuideFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static CreateGuideFragment newInstance() {
         CreateGuideFragment fragment = new CreateGuideFragment();
         Bundle args = new Bundle();
@@ -114,16 +112,18 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
         // TODO: change to user name instead of email later
         Guide guide = new Guide(guideTitle.getText().toString(), guideBody.getText().toString(), my_race, op_race ,uid, userEmail);
 
-        mDatabase.push().setValue(guide).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if(task.isSuccessful()){
-                    Toast.makeText(getActivity(), "Guide Created", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_SHORT).show();
+            mDatabase.push().setValue(guide).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if(task.isSuccessful()){
+                        Toast.makeText(getActivity(), "Guide Created", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                    }
                 }
-            }
-        });
+            });
+
+
 
         guideCreateBtn.setBackgroundColor(Color.GREEN);
         progressBar.setVisibility(View.INVISIBLE);
@@ -244,7 +244,6 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 }

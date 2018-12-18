@@ -135,7 +135,6 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        // TODO: add more navigations here later
         if (id == R.id.nav_all_guides) {
             makeTransaction(allFragment, "ALL", "ALL_GUIDE", null);
         } else if (id == R.id.nav_zerg_guides) {
@@ -220,7 +219,6 @@ public class MainActivity extends AppCompatActivity
     public String getUserEmail () { return mAuth.currentUser().getEmail(); }
 
     private void setUpDrawerInfo() {
-        // TODO: bind it to another variable here to use
         userName.setText(mAuth.currentUser().getUid());
         userEmail.setText(mAuth.currentUser().getEmail());
     }

@@ -33,7 +33,6 @@ import java.util.List;
  * Use the {@link AllFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-// TODO: change the defaults of the fragment later
 public class AllFragment extends Fragment {
     private AllGuideViewModel mViewModel;
     private GuideAdapter adapter;
