@@ -3,30 +3,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
+    <!-- check behavoir => choose selected item -->
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_all_guides"
             android:icon="@drawable/ic_menu_home"
             android:title="@string/nav_all_guides" />
+        <item
+            android:id="@+id/nav_zerg_guides"
+            android:icon="@drawable/ic_menu_zerg"
+            android:title="@string/nav_zerg_guides" />
+        <item
+            android:id="@+id/nav_protoss_guides"
+            android:icon="@drawable/ic_menu_protoss"
+            android:title="@string/nav_protoss_guides" />
+        <!-- TODO: find terran.svg later -->
+        <item
+            android:id="@+id/nav_terran_guides"
+            android:icon="@drawable/ic_menu_protoss"
+            android:title="@string/nav_terran_guides" />
     </group>
-
-    <item android:title="Race Guides">
-        <menu>
-            <item
-                android:id="@+id/nav_zerg_guides"
-                android:icon="@drawable/ic_menu_zerg"
-                android:title="@string/nav_zerg_guides" />
-            <item
-                android:id="@+id/nav_protoss_guides"
-                android:icon="@drawable/ic_menu_protoss"
-                android:title="@string/nav_protoss_guides" />
-            <!-- TODO: find terran.svg later -->
-            <item
-                android:id="@+id/nav_terran_guides"
-                android:icon="@drawable/ic_menu_protoss"
-                android:title="@string/nav_terran_guides" />
-        </menu>
-    </item>
 
     <item android:title="Account">
         <menu>

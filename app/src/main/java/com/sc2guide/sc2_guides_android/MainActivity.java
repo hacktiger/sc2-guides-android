@@ -2,12 +2,18 @@ package com.sc2guide.sc2_guides_android;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -63,9 +69,6 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mAuth = new FirebaseAuthService();
-        fragmentManager = getSupportFragmentManager();
-
         setUpVariableMap(); // map variable to view comps
         setUpToolBar();// set up toolbar
         ab = getSupportActionBar(); // must be below toolbar lel
@@ -76,6 +79,10 @@ public class MainActivity extends AppCompatActivity
         setUpNavigation();
 
         // showErrorDialog();
+        initFirstFrag(savedInstanceState);
+    }
+
+    private  void initFirstFrag (Bundle savedInstanceState) {
         if (findViewById(R.id.fragment_container) != null) {
             if (savedInstanceState != null) { return; }
             // set up allFragment as the first fragment to appear on activity
@@ -97,6 +104,8 @@ public class MainActivity extends AppCompatActivity
 
     // @effects: map variable to layout
     private void setUpVariableMap() {
+        mAuth = new FirebaseAuthService();
+        fragmentManager = getSupportFragmentManager();
         // get the reference in header for variable
         NavigationView headerView = findViewById(R.id.nav_view);
         hView = headerView.getHeaderView(0);
@@ -135,6 +144,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        //
         if (id == R.id.nav_all_guides) {
             makeTransaction(allFragment, "ALL", "ALL_GUIDE", null);
         } else if (id == R.id.nav_zerg_guides) {
@@ -149,7 +159,7 @@ public class MainActivity extends AppCompatActivity
             startActivity(new Intent(MainActivity.this, LogInActivity.class));
             finish();
         }
-
+        // close the drawer after navigation
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -167,10 +177,11 @@ public class MainActivity extends AppCompatActivity
             args.putSerializable("GUIDE_OBJECT", guide);
         }
         fragment.setArguments(args);
-        if (currentFragTag.equalsIgnoreCase(tag)) {
+        if (currentFragTag.equalsIgnoreCase(tag) && currentFragTag != "DETAIL_FRAG") {
             return; //
         }
         transaction = fragmentManager.beginTransaction();
+        transaction.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right); // Animation
         transaction.replace(R.id.fragment_container, fragment, tag).commit();
         currentFragTag = tag;
         transaction.addToBackStack(null);
@@ -209,7 +220,6 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 
         drawer.addDrawerListener(toggle);
-
         toggle.syncState();
     }
 
@@ -227,7 +237,6 @@ public class MainActivity extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
-
     //
     void showErrorDialog (String title, String message) {
         ErrorFragment newFragment = ErrorFragment.newInstance(
@@ -236,7 +245,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void doPositiveClick () {
-        //
+        // positive click on the error dialog
     }
 
     public void hideKeyboard(View view) {
@@ -258,5 +267,56 @@ public class MainActivity extends AppCompatActivity
 
             public View gethView() {
                 return hView;
+            }
+
+            public void setNavMenuItemThemeColors(int color){
+                //Setting default colors for menu item Text and Icon
+                int navDefaultTextColor = Color.parseColor("#202020");
+                int navDefaultIconColor = Color.parseColor("#737373");
+
+                //Defining ColorStateList for menu item Text
+                ColorStateList navMenuTextList = new ColorStateList(
+                        new int[][]{
+                                new int[]{android.R.attr.state_checked},
+                                new int[]{android.R.attr.state_enabled},
+                                new int[]{android.R.attr.state_pressed},
+                                new int[]{android.R.attr.state_focused},
+                                new int[]{android.R.attr.state_pressed}
+                        },
+                        new int[] {
+                                color,
+                                navDefaultTextColor,
+                                navDefaultTextColor,
+                                navDefaultTextColor,
+                                navDefaultTextColor
+                        }
+                );
+
+                //Defining ColorStateList for menu item Icon
+                ColorStateList navMenuIconList = new ColorStateList(
+                        new int[][]{
+                                new int[]{android.R.attr.state_checked},
+                                new int[]{android.R.attr.state_enabled},
+                                new int[]{android.R.attr.state_pressed},
+                                new int[]{android.R.attr.state_focused},
+                                new int[]{android.R.attr.state_pressed}
+                        },
+                        new int[] {
+                                color,
+                                navDefaultIconColor,
+                                navDefaultIconColor,
+                                navDefaultIconColor,
+                                navDefaultIconColor
+                        }
+                );
+
+                navigationView.setItemTextColor(navMenuTextList);
+                navigationView.setItemIconTintList(navMenuIconList);
+            }
+
+            public void changeUIColors(int mainColor, int gradient) {
+                setNavMenuItemThemeColors(getResources().getColor(mainColor));
+                ab.setBackgroundDrawable(new ColorDrawable(getResources().getColor(mainColor)));
+                hView.setBackgroundResource(gradient);
             }
         }

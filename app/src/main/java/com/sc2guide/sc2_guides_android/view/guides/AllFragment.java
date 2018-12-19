@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -90,7 +92,7 @@ public class AllFragment extends Fragment {
         Log.d("PARAMM", "mwssss" + mParam1);
         //
         ((MainActivity) getActivity()).getProgressBar().setVisibility(View.VISIBLE);
-        changeUIColors();
+        ((MainActivity)getActivity()).changeUIColors(R.color.all_guide_color, R.drawable.all_gradient);
         // recyler view of the fragment
         RecyclerView recyclerView = getView().findViewById(R.id.all_guides_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -102,6 +104,12 @@ public class AllFragment extends Fragment {
                 // on click of all items
                 ((MainActivity) getActivity()).makeTransaction(new GuideDetailFragment(),"DETAIL_FRAG","GUIDE_DETAIL", guide);
             }
+        }, new GuideAdapter.OnItemLongClickListener() {
+
+            @Override
+            public void OnItemLongClick(Guide guide) {
+                Toast.makeText(getActivity(), "Long clicked", Toast.LENGTH_SHORT).show();
+            }
         });
         recyclerView.setAdapter(adapter);
         // get data from view model
@@ -110,11 +118,6 @@ public class AllFragment extends Fragment {
             updateUI(guide);
         });
 
-    }
-
-    private void changeUIColors() {
-        ((MainActivity) getActivity()).getAb().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.all_guide_color)));
-        ((MainActivity) getActivity()).gethView().setBackgroundResource(R.drawable.all_gradient);
     }
 
     @Override

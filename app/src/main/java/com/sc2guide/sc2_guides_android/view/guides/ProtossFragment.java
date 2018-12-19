@@ -74,9 +74,9 @@ public class ProtossFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //
+        // change UI for fragment
         ((MainActivity) getActivity()).getProgressBar().setVisibility(View.VISIBLE);
-        changeUIColors();
+        ((MainActivity)getActivity()).changeUIColors(R.color.protossTeal, R.drawable.protoss_gradient);
         // recyler view of the fragment
         RecyclerView recyclerView = getView().findViewById(R.id.all_guides_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -87,6 +87,12 @@ public class ProtossFragment extends Fragment {
             public void onItemClick(Guide guide) {
                 ((MainActivity) getActivity()).makeTransaction(new GuideDetailFragment(),"DETAIL_FRAG","GUIDE_DETAIL", guide);
             }
+        }, new GuideAdapter.OnItemLongClickListener() {
+
+            @Override
+            public void OnItemLongClick(Guide guide) {
+                Toast.makeText(getActivity(), "Long clicked", Toast.LENGTH_SHORT).show();
+            }
         });
         recyclerView.setAdapter(adapter);
         // get data from view model
@@ -96,10 +102,6 @@ public class ProtossFragment extends Fragment {
         });
     }
 
-    private void changeUIColors() {
-        ((MainActivity) getActivity()).getAb().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.protossTeal)));
-        ((MainActivity) getActivity()).gethView().setBackgroundResource(R.drawable.protoss_gradient);
-    }
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {

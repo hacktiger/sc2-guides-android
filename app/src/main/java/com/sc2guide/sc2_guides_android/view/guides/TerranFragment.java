@@ -3,6 +3,7 @@ package com.sc2guide.sc2_guides_android.view.guides;
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -63,7 +64,6 @@ public class TerranFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         mViewModel = ViewModelProviders.of(this).get(RaceGuideViewModel.class);
         mViewModel.getRaceGuides("Terran").observe(this, guide -> {
             updateUI(guide);
@@ -72,6 +72,7 @@ public class TerranFragment extends Fragment {
 
     private void updateUI(List<Guide> guide) {
         adapter.setGuides(guide);
+        ((MainActivity) getActivity()).getProgressBar().setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -85,7 +86,8 @@ public class TerranFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //
-        changeUIColors();
+        ((MainActivity) getActivity()).getProgressBar().setVisibility(View.VISIBLE);
+        ((MainActivity)getActivity()).changeUIColors(R.color.terranRed, R.drawable.terran_gradient);
         //
         RecyclerView recyclerView = getView().findViewById(R.id.all_guides_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -96,6 +98,12 @@ public class TerranFragment extends Fragment {
             public void onItemClick(Guide guide) {
                 ((MainActivity) getActivity()).makeTransaction(new GuideDetailFragment(),"DETAIL_FRAG","GUIDE_DETAIL", guide);
             }
+        }, new GuideAdapter.OnItemLongClickListener() {
+
+            @Override
+            public void OnItemLongClick(Guide guide) {
+                Toast.makeText(getActivity(), "Long clicked", Toast.LENGTH_SHORT).show();
+            }
         });
         recyclerView.setAdapter(adapter);
         // get data from view model
@@ -104,12 +112,6 @@ public class TerranFragment extends Fragment {
             updateUI(guide);
         });
     }
-
-    private void changeUIColors() {
-        ((MainActivity) getActivity()).getAb().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.terranRed)));
-        ((MainActivity) getActivity()).gethView().setBackgroundResource(R.drawable.terran_gradient);
-    }
-
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);

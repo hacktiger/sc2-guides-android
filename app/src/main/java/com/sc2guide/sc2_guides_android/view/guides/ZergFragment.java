@@ -74,6 +74,9 @@ public class ZergFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //
+        ((MainActivity)getActivity()).changeUIColors(R.color.zergPurple, R.drawable.zerg_gradient);
+        //
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -83,6 +86,7 @@ public class ZergFragment extends Fragment {
 
     private void updateUI (List<Guide> guide) {
         adapter.setGuides(guide);
+        ((MainActivity)getActivity()).getProgressBar().setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -96,7 +100,8 @@ public class ZergFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         // recyler view of the fragment
-        changeUIColors();
+
+        ((MainActivity) getActivity()).getProgressBar().setVisibility(View.VISIBLE);
         //
         RecyclerView recyclerView = getView().findViewById(R.id.all_guides_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -107,6 +112,12 @@ public class ZergFragment extends Fragment {
             public void onItemClick(Guide guide) {
                 ((MainActivity) getActivity()).makeTransaction(new GuideDetailFragment(),"DETAIL_FRAG","GUIDE_DETAIL", guide);
             }
+        }, new GuideAdapter.OnItemLongClickListener() {
+
+            @Override
+            public void OnItemLongClick(Guide guide) {
+                Toast.makeText(getActivity(), "Long clicked", Toast.LENGTH_SHORT).show();
+            }
         });
         recyclerView.setAdapter(adapter);
         // get data from view model
@@ -114,11 +125,6 @@ public class ZergFragment extends Fragment {
         mViewModel.getRaceGuides("Zerg").observe(this, guide -> {
             updateUI(guide);
         });
-    }
-
-    private void changeUIColors() {
-        ((MainActivity) getActivity()).getAb().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.zergPurple)));
-        ((MainActivity) getActivity()).gethView().setBackgroundResource(R.drawable.zerg_gradient);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
