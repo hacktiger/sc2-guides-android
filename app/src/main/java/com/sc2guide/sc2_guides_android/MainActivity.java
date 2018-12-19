@@ -11,9 +11,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -25,16 +22,14 @@ import android.view.MenuItem;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sc2guide.sc2_guides_android.data.model.Guide;
 import com.sc2guide.sc2_guides_android.service.FirebaseAuthService;
 import com.sc2guide.sc2_guides_android.view.auth.LogInActivity;
 import com.sc2guide.sc2_guides_android.view.common.ErrorFragment;
-import com.sc2guide.sc2_guides_android.view.guides.AllFragment;
 import com.sc2guide.sc2_guides_android.view.guides.CreateGuideFragment;
-import com.sc2guide.sc2_guides_android.view.guides.ProtossFragment;
-import com.sc2guide.sc2_guides_android.view.guides.TerranFragment;
-import com.sc2guide.sc2_guides_android.view.guides.ZergFragment;
+import com.sc2guide.sc2_guides_android.view.guides.GuideListFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener
@@ -43,10 +38,10 @@ public class MainActivity extends AppCompatActivity
     private TextView userName;
     private TextView userEmail;
 
-    private AllFragment allFragment;
-    private ZergFragment zergFragment;
-    private ProtossFragment protossFragment;
-    private TerranFragment terranFragment;
+    private GuideListFragment allFragment;
+    private GuideListFragment zergFragment;
+    private GuideListFragment protossFragment;
+    private GuideListFragment terranFragment;
     private String currentFragTag;
 
     private CreateGuideFragment createGuideFragment;
@@ -86,19 +81,21 @@ public class MainActivity extends AppCompatActivity
         if (findViewById(R.id.fragment_container) != null) {
             if (savedInstanceState != null) { return; }
             // set up allFragment as the first fragment to appear on activity
-            allFragment.setArguments(getIntent().getExtras()); // get extra
             transaction = fragmentManager.beginTransaction(); // begin transaction + commit it
-            transaction.add(R.id.fragment_container, new ErrorFragment());
             transaction.add(R.id.fragment_container, allFragment).commit();
         }
     }
 
 
     private void setUpNavigation() {
-        allFragment = new AllFragment();
-        zergFragment = new ZergFragment();
-        terranFragment = new TerranFragment();
-        protossFragment = new ProtossFragment();
+        allFragment = GuideListFragment.newInstance(R.color.all_guide_color, R.drawable.all_gradient,
+                "All Guides", "Guides for all races", "All", "ALL_GUIDE");
+        zergFragment = GuideListFragment.newInstance(R.color.zergPurple, R.drawable.zerg_gradient,
+                "Zerg Guides", "Guides for disgusting zerg players", "Zerg", "ZERG_GUIDE");
+        terranFragment = GuideListFragment.newInstance(R.color.terranRed, R.drawable.terran_gradient,
+                "Terran Guides", "Learn how to fly buildings from base trades", "Terran", "TERRAN_GUIDE");
+        protossFragment = GuideListFragment.newInstance(R.color.protossTeal, R.drawable.protoss_gradient,
+                "Protoss Guides", "Guides for the A-move bois", "Protoss", "PROTOSS_GUIDE");
         currentFragTag = "None";
     }
 
@@ -146,13 +143,13 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         //
         if (id == R.id.nav_all_guides) {
-            makeTransaction(allFragment, "ALL", "ALL_GUIDE", null);
+            navigateToRaceGuideList(allFragment, "ALL");
         } else if (id == R.id.nav_zerg_guides) {
-            makeTransaction(zergFragment, "ZERG", "ZERG_GUIDE", null);
+            navigateToRaceGuideList(zergFragment, "ZERG");
         } else if (id == R.id.nav_protoss_guides) {
-            makeTransaction(protossFragment, "PROTOSS", "PROTOSS_GUIDE", null);
+            navigateToRaceGuideList(protossFragment, "TERRAN");
         } else if (id == R.id.nav_terran_guides) {
-            makeTransaction(terranFragment, "TERRAN","TERRAN_GUIDE", null);
+            navigateToRaceGuideList(terranFragment, "PROTOSS");
         } else if (id == R.id.nav_log_out) {
             // Sign user out of Firebase and navigate back to login activity
             mAuth.signOut();
@@ -165,8 +162,18 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+            /**
+             * @effects: handle drawer nav for guide list
+             */
+    public void navigateToRaceGuideList (Fragment fragment, String tag) {
+        transaction = fragmentManager.beginTransaction();
+        transaction.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right); // Animation
+        transaction.replace(R.id.fragment_container, fragment, tag).commit();
+        transaction.addToBackStack(null);
+    }
+
     /**
-     * @effects: handle drawer nav
+     * @effects: handle nav for guide details
      * @param fragment
      * @param guide
      */
@@ -177,13 +184,10 @@ public class MainActivity extends AppCompatActivity
             args.putSerializable("GUIDE_OBJECT", guide);
         }
         fragment.setArguments(args);
-        if (currentFragTag.equalsIgnoreCase(tag) && currentFragTag != "DETAIL_FRAG") {
-            return; //
-        }
+
         transaction = fragmentManager.beginTransaction();
         transaction.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right); // Animation
-        transaction.replace(R.id.fragment_container, fragment, tag).commit();
-        currentFragTag = tag;
+        transaction.replace(R.id.fragment_container, fragment, tag).commit(); // replace -> frag
         transaction.addToBackStack(null);
     }
 
@@ -250,7 +254,12 @@ public class MainActivity extends AppCompatActivity
 
     public void hideKeyboard(View view) {
         InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        try {
+            inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        } catch (NullPointerException e) {
+            Toast.makeText(this, "Cannot hide keyboard", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
     }
 
             public FloatingActionButton getFab() {
