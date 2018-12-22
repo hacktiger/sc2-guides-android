@@ -8,20 +8,40 @@ public class Guide implements Serializable {
     private String body;
     private String authorId;
     private String authorName;
-    private String my_race;
-    private String op_race;
+    private String myRace;
+    private String opRace;
 
     public Guide () {
         //
     }
 
-    public Guide(String title, String body, String my_race, String op_race, String authorId, String authorName) {
-        this.title = title;
-        this.body = body;
-        this.my_race = my_race;
-        this.op_race = op_race;
-        this.authorId = authorId;
-        this.authorName = authorName;
+    public Guide(String title, String body, String myRace, String opRace, String authorId, String authorName) throws Exception{
+        if (validateTitle(title) && validateRace(myRace) && validateRace(opRace) && validateAuthorId(authorId) && validateAuthorName(authorName)){
+            this.title = title;
+            this.body = body;
+            this.myRace = myRace;
+            this.opRace = opRace;
+            this.authorId = authorId;
+            this.authorName = authorName;
+        } else {
+            throw new Exception("Cant create guide. Guide.constructor");
+        }
+    }
+
+    private boolean validateTitle (String title) {
+        return (!title.isEmpty());
+    }
+
+    private boolean validateRace (String race) {
+        return race.equals("Zerg") || race.equals("Protoss") || race.equals("Terran") || race.equals("All");
+    }
+
+    private boolean validateAuthorId (String authorId) {
+        return (!authorId.isEmpty());
+    }
+
+    private boolean validateAuthorName (String authorName) {
+        return (!authorName.isEmpty());
     }
 
     public String getTitle() {
@@ -29,7 +49,11 @@ public class Guide implements Serializable {
     }
 
     public void setTitle(String title) {
-        this.title = title;
+        if (validateTitle(title)) {
+            this.title = title;
+        } else {
+            throw new IllegalArgumentException("Title is not validated");
+        }
     }
 
     public String getBody() {
@@ -37,23 +61,35 @@ public class Guide implements Serializable {
     }
 
     public void setBody(String body) {
-        this.body = body;
+        if (validateTitle(body)) {
+            this.body = body;
+        } else {
+            throw new IllegalArgumentException("Body is not validated");
+        }
     }
 
-    public String getMy_race() {
-        return my_race;
+    public String getMyRace() {
+        return myRace;
     }
 
-    public void setMy_race(String my_race) {
-        this.my_race = my_race;
+    public void setMyRace(String myRace) {
+        if(validateRace(myRace)){
+            this.myRace = myRace;
+        } else {
+            throw new IllegalArgumentException("My Race not validated");
+        }
     }
 
-    public String getOp_race() {
-        return op_race;
+    public String getOpRace() {
+        return opRace;
     }
 
-    public void setOp_race(String op_race) {
-        this.op_race = op_race;
+    public void setOpRace(String opRace) {
+        if(validateRace(opRace)){
+            this.opRace = opRace;
+        } else {
+            throw new IllegalArgumentException("Opponent Race not validated");
+        }
     }
 
     public String getAuthorId() {
@@ -61,7 +97,11 @@ public class Guide implements Serializable {
     }
 
     public void setAuthorId(String authorId) {
-        this.authorId = authorId;
+        if (validateTitle(authorId)) {
+            this.authorId = authorId;
+        } else {
+            throw new IllegalArgumentException("Author id is not validated");
+        }
     }
 
     public String getAuthorName() {
@@ -69,6 +109,10 @@ public class Guide implements Serializable {
     }
 
     public void setAuthorName(String authorName) {
-        this.authorName = authorName;
+        if (validateTitle(authorName)) {
+            this.authorName = authorName;
+        } else {
+            throw new IllegalArgumentException("Author name is not validated");
+        }
     }
 }

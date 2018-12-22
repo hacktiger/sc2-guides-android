@@ -31,7 +31,7 @@ public class RaceGuideViewModel extends ViewModel {
         // Do async operation to fetch guides
         FirebaseDatabase.getInstance()
                 .getReference(reference)
-                .orderByChild("my_race")
+                .orderByChild("myRace")
                 .equalTo(race)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -41,12 +41,16 @@ public class RaceGuideViewModel extends ViewModel {
                             for(DataSnapshot snapshot: dataSnapshot.getChildren()){
                                 String title = snapshot.child("title").getValue().toString();
                                 String body = snapshot.child("body").getValue().toString();
-                                String my_race = snapshot.child("my_race").getValue().toString();
-                                String op_race = snapshot.child("op_race").getValue().toString();
+                                String my_race = snapshot.child("myRace").getValue().toString();
+                                String op_race = snapshot.child("opRace").getValue().toString();
                                 String author_id = snapshot.child("authorId").getValue().toString();
                                 String author_email = snapshot.child("authorName").getValue().toString();
 
-                                listGuides.add(new Guide(title,body,my_race,op_race,author_id,author_email));
+                                try {
+                                    listGuides.add(new Guide(title,body,my_race,op_race,author_id,author_email));
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                             }
                             raceGuides.setValue(listGuides);
                         }

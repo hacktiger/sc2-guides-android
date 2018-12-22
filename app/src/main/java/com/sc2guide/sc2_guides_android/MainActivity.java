@@ -6,19 +6,20 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBar;
-import android.view.View;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -138,7 +139,7 @@ public class MainActivity extends AppCompatActivity
      */
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         //
@@ -174,8 +175,7 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * @effects: handle nav for guide details
-     * @param fragment
-     * @param guide
+     *  used in {@code GuideListFragment.onViewCreated.adapter && this.setUpFab}
      */
     public void makeTransaction(Fragment fragment, String tag, String fragName, Guide guide) {
         Bundle args = new Bundle();
@@ -193,6 +193,7 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * @effects: Helper method to set action bar title and subtitle
+     *  used ib {@code this.onCreate && GuideListFragment.onResume}
      * @param title
      * @param subtitle
      */
@@ -201,11 +202,19 @@ public class MainActivity extends AppCompatActivity
         ab.setSubtitle(subtitle);
     }
 
+    /**
+     * @effects: setting up the tool bar
+     *  used in {@code this.onCreate}
+     */
     private void setUpToolBar () {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
     }
 
+            /**
+             * @effects: set up floating action button ( create new guide )
+             *  used in {@code this.onCreate}
+             */
     private void setUpFab () {
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {

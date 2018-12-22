@@ -6,7 +6,7 @@ App:
 Purpose:
 - Practice Android w/ Firebase + MVVM
 
-Todo:
+My To do list
 - Separate some code -> controller or smt
 - change Guide model to handle exceptions
 - Add exceptions + show error messages where needed

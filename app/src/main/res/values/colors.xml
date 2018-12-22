@@ -7,4 +7,5 @@
     <color name="protossTeal">#008080</color>
     <color name="terranRed">#ff1a1a</color>
     <color name="all_guide_color">#008000</color>
+    <color name="btn_inactive">#d3d3d3</color>
 </resources>

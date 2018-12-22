@@ -15,12 +15,12 @@ public class User implements Serializable {
 
     }
 
-    public User (String name, String email) throws Exception {
+    public User (String name, String email){
         if(validateName(name) && validateEmail(email)) {
             this.name = name;
             this.email = email;
         } else {
-            throw new Exception("Failed created User object");
+            throw new IllegalArgumentException("Failed created User object");
         }
     }
 
@@ -29,7 +29,6 @@ public class User implements Serializable {
     }
 
     private boolean validateEmail(String email) {
-        // TODO: maybe add extra validation here later
         return (!email.isEmpty());
     }
 

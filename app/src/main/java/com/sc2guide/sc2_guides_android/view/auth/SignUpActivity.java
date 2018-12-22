@@ -2,11 +2,10 @@ package com.sc2guide.sc2_guides_android.view.auth;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -21,13 +20,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.sc2guide.sc2_guides_android.data.model.User;
-import com.sc2guide.sc2_guides_android.service.FirebaseAuthService;
 import com.sc2guide.sc2_guides_android.MainActivity;
 import com.sc2guide.sc2_guides_android.R;
+import com.sc2guide.sc2_guides_android.controller.FirebaseController;
+import com.sc2guide.sc2_guides_android.data.model.User;
+import com.sc2guide.sc2_guides_android.service.FirebaseAuthService;
 
 public class SignUpActivity extends AppCompatActivity {
     private FirebaseAuthService mAuth;
+    private FirebaseController mFirebaseController;
     private Intent intent;
     private ActionBar ab;
     private ProgressBar progressBar;
@@ -50,8 +51,7 @@ public class SignUpActivity extends AppCompatActivity {
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                signUpBtn.setBackgroundColor(0xFF888888); // GRAY
-                progressBar.setVisibility(View.VISIBLE);
+                updateUI(R.color.btn_inactive, true);
                 handleSignUp(v);
             }
         });
@@ -107,6 +107,7 @@ public class SignUpActivity extends AppCompatActivity {
      */
     private void setUpVarMap () {
         mAuth = new FirebaseAuthService();
+        mFirebaseController = new FirebaseController();
         editTxtEmail = findViewById(R.id.sign_up_email);
         editTxtName = findViewById(R.id.sign_up_name);
         editTxtPassword = findViewById(R.id.sign_up_password);
@@ -137,23 +138,67 @@ public class SignUpActivity extends AppCompatActivity {
         String uName = editTxtName.getText().toString();
         String uPassword = editTxtPassword.getText().toString();
         String uConfirmPassword = editTxtConfirmPassword.getText().toString();
-        // TODO: !important MAKE A CONTROLLER FOR THIS OR SOMETHING PLEASE
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference mDatabase = firebaseDatabase.getReference("users");
-
+        // TODO: !important split to another validation method;
         boolean checkPassword = validatePassword(uPassword, uConfirmPassword );
         if(!checkPassword) {
             Toast.makeText(this, "Passwords must match", Toast.LENGTH_SHORT).show();
-            signUpBtn.setBackgroundColor(getResources().getColor(R.color.zergPurple)); // GRAY
-            progressBar.setVisibility(View.INVISIBLE);
+            updateUI(R.color.zergPurple, false);
             return;
         }
+        //TODO: to many Toast
+        insertUserToDB(uName, uEmail);
+        insertUserToFirebaseAuth(uEmail, uPassword);
+
+        updateUI(R.color.zergPurple, false);
+    }
+
+    /**
+     * @effects: change confirm button color and progress bar visibility
+     * @param btnColor : int Resources
+     * @param isVisible true: visible/ false: not
+     */
+    private void updateUI(int btnColor, boolean isVisible){
+        signUpBtn.setBackgroundColor(getResources().getColor(btnColor));
+        if (isVisible) {
+            progressBar.setVisibility(View.VISIBLE);
+        } else {
+            progressBar.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    /**
+     * @effects: insert the user to firebase auth
+     * @param uEmail
+     * @param uPassword
+     */
+    private void insertUserToFirebaseAuth(String uEmail, String uPassword) {
+        mAuth.getFirebase().createUserWithEmailAndPassword(uEmail, uPassword)
+                .addOnCompleteListener(SignUpActivity.this, task -> {
+                    if (task.isSuccessful()) {
+                        // Sign in success, update UI with the signed-in user's information
+                        intent = new Intent(SignUpActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        String errMess = task.getException().getMessage();
+                        Toast.makeText(SignUpActivity.this, "Error : " + errMess, Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(e -> Toast.makeText(SignUpActivity.this, "Something went wrong : " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    /**
+     * @effects: insert user to firebase realtime database
+     * @param uName
+     * @param uEmail
+     */
+    private void insertUserToDB(String uName, String uEmail) {
         try {
             User user = new User(uName, uEmail);
-            mDatabase.push().setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+            mFirebaseController.insertUser(user, new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
-                    if(task.isSuccessful()){
+                    if (task.isSuccessful()) {
                         Toast.makeText(SignUpActivity.this, "User Created", Toast.LENGTH_SHORT).show();
                     } else {
                         String errMess = task.getException().getMessage();
@@ -165,29 +210,6 @@ public class SignUpActivity extends AppCompatActivity {
             Toast.makeText(SignUpActivity.this, " " +  e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
-        mAuth.getFirebase().createUserWithEmailAndPassword(uEmail, uPassword)
-                .addOnCompleteListener(SignUpActivity.this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            intent = new Intent(SignUpActivity.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            String errMess = task.getException().getMessage();
-                            Toast.makeText(SignUpActivity.this, "Error : " + errMess, Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(SignUpActivity.this, "Something went wrong : " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-        signUpBtn.setBackgroundColor(getResources().getColor(R.color.zergPurple)); // GRAY
-        progressBar.setVisibility(View.INVISIBLE);
     }
 
     private boolean validatePassword(String uPassword, String uConfirmPassword) {

@@ -1,6 +1,5 @@
 package com.sc2guide.sc2_guides_android.view.guides;
 
-import android.app.Activity;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,7 +9,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -19,12 +17,9 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.sc2guide.sc2_guides_android.MainActivity;
 import com.sc2guide.sc2_guides_android.R;
+import com.sc2guide.sc2_guides_android.controller.FirebaseController;
 import com.sc2guide.sc2_guides_android.data.model.Guide;
 
 /**
@@ -36,7 +31,6 @@ import com.sc2guide.sc2_guides_android.data.model.Guide;
  * create an instance of this fragment.
  */
 
-// TODO: !important : Split the firebase stuff to somewhere else
 public class CreateGuideFragment extends Fragment implements AdapterView.OnItemSelectedListener {
     private Spinner spinner;
     private Spinner spinner_op;
@@ -50,7 +44,7 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
 
     private OnFragmentInteractionListener mListener;
 
-    private FirebaseDatabase firebaseDatabase;
+    private FirebaseController mFirebaseController;
 
     public CreateGuideFragment() {
         // Required empty public constructor
@@ -70,11 +64,16 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //
+        mFirebaseController = new FirebaseController();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
-
         return inflater.inflate(R.layout.fragment_create_guide, container, false);
     }
 
@@ -86,51 +85,54 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
         setUpMapVariable();
         setUpHideKeyBoard(); // behind map variable
 
-        guideCreateBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        guideCreateBtn.setOnClickListener(v -> {
+            try {
                 handleCreateGuide();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
     }
 
-    private void handleCreateGuide() {
+    private void handleCreateGuide() throws Exception {
         // Manage what happens if user click confirm to create guide
-        // TODO: !important migrate this to a controller or something
-        String guideDatabaseReference = "guides";
-
-        guideCreateBtn.setBackgroundColor(Color.GRAY);
-        progressBar.setVisibility(View.VISIBLE);
-
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference mDatabase = firebaseDatabase.getReference(guideDatabaseReference);
-
-        Activity main = getActivity();
-
-        String userEmail = ((MainActivity) main).getUserEmail();
-        String uid = ((MainActivity) main).getUserId();
+        updateUI(Color.GRAY, true);
+        //
+        String userEmail = ((MainActivity) getActivity()).getUserEmail();
+        String uid = ((MainActivity) getActivity()).getUserId();
         // TODO: change to user name instead of email later
         Guide guide = new Guide(guideTitle.getText().toString(), guideBody.getText().toString(), my_race, op_race ,uid, userEmail);
+        mFirebaseController.insertGuide(guide, task -> {
+            if(task.isSuccessful()){
+                Toast.makeText(getActivity(), "Guide created", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getActivity(), "Error! not created", Toast.LENGTH_SHORT).show();
+            }
+        });
 
-            mDatabase.push().setValue(guide).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if(task.isSuccessful()){
-                        Toast.makeText(getActivity(), "Guide Created", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
+        updateUI(Color.GREEN, false);
+    }
 
-
-
-        guideCreateBtn.setBackgroundColor(Color.GREEN);
-        progressBar.setVisibility(View.INVISIBLE);
+    /**
+     * @effects: handle UI change for progress bar and button colr
+     *  used in {@code: this.handleCreateGuide()}
+     * @param btnColor
+     * @param isVisible
+     */
+    private void updateUI (int btnColor, boolean isVisible) {
+        guideCreateBtn.setBackgroundColor(btnColor);
+        if (isVisible) {
+            progressBar.setVisibility(View.VISIBLE);
+        } else {
+            progressBar.setVisibility(View.INVISIBLE);
+        }
     }
 
 
-
+    /**
+     * @effects: map variables to layout components
+     *  used in {@code: this.onViewCreated}
+     */
     private void setUpMapVariable () {
         guideTitle = getView().findViewById(R.id.create_guide_title);
         guideBody = getView().findViewById(R.id.create_guide_body);
@@ -138,14 +140,19 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
         progressBar = getView().findViewById(R.id.create_guide_progress);
     }
 
+    /**
+     * @effects: set up options for the 2 spinners
+     *  used in {@code: this.onViewCreated}
+     */
     private void setUpSpinner() {
+        // spinner for my race
         spinner = (Spinner) getView().findViewById(R.id.create_guide_spinner_my_race);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
                 R.array.race_option, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
-
+        // Spinner for the opponent race
         spinner_op = (Spinner) getView().findViewById(R.id.create_guide_spinner_enemy_race);
         ArrayAdapter<CharSequence> adapter_op = ArrayAdapter.createFromResource(getActivity(),
                 R.array.race_option, android.R.layout.simple_spinner_item);
@@ -161,6 +168,9 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
         }
     }
 
+    /**
+     * @effects: hide key board on user press outside of the text input fields
+     */
     private void setUpHideKeyBoard() {
         guideTitle.setOnFocusChangeListener(new View.OnFocusChangeListener(){
             @Override
