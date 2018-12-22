@@ -31,6 +31,7 @@ import com.sc2guide.sc2_guides_android.view.auth.LogInActivity;
 import com.sc2guide.sc2_guides_android.view.common.ErrorFragment;
 import com.sc2guide.sc2_guides_android.view.guides.CreateGuideFragment;
 import com.sc2guide.sc2_guides_android.view.guides.GuideListFragment;
+import com.sc2guide.sc2_guides_android.view.users.ProfileFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity
     private GuideListFragment zergFragment;
     private GuideListFragment protossFragment;
     private GuideListFragment terranFragment;
+    private ProfileFragment profileFragment;
     private String currentFragTag;
 
     private CreateGuideFragment createGuideFragment;
@@ -97,6 +99,8 @@ public class MainActivity extends AppCompatActivity
                 "Terran Guides", "Learn how to fly buildings from base trades", "Terran", "TERRAN_GUIDE");
         protossFragment = GuideListFragment.newInstance(R.color.protossTeal, R.drawable.protoss_gradient,
                 "Protoss Guides", "Guides for the A-move bois", "Protoss", "PROTOSS_GUIDE");
+        // TODO: add user profile here later
+        profileFragment = ProfileFragment.newInstance();
         currentFragTag = "None";
     }
 
@@ -144,13 +148,15 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         //
         if (id == R.id.nav_all_guides) {
-            navigateToRaceGuideList(allFragment, "ALL");
+            navigateToFragment(allFragment, "ALL");
         } else if (id == R.id.nav_zerg_guides) {
-            navigateToRaceGuideList(zergFragment, "ZERG");
+            navigateToFragment(zergFragment, "ZERG");
         } else if (id == R.id.nav_protoss_guides) {
-            navigateToRaceGuideList(protossFragment, "TERRAN");
+            navigateToFragment(protossFragment, "TERRAN");
         } else if (id == R.id.nav_terran_guides) {
-            navigateToRaceGuideList(terranFragment, "PROTOSS");
+            navigateToFragment(terranFragment, "PROTOSS");
+        } else if (id == R.id.nav_profile) {
+            navigateToFragment(profileFragment, "PROFILE");
         } else if (id == R.id.nav_log_out) {
             // Sign user out of Firebase and navigate back to login activity
             mAuth.signOut();
@@ -166,7 +172,7 @@ public class MainActivity extends AppCompatActivity
             /**
              * @effects: handle drawer nav for guide list
              */
-    public void navigateToRaceGuideList (Fragment fragment, String tag) {
+    public void navigateToFragment (Fragment fragment, String tag) {
         transaction = fragmentManager.beginTransaction();
         transaction.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right); // Animation
         transaction.replace(R.id.fragment_container, fragment, tag).commit();

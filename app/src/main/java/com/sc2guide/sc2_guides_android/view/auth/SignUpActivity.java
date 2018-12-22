@@ -145,11 +145,8 @@ public class SignUpActivity extends AppCompatActivity {
             updateUI(R.color.zergPurple, false);
             return;
         }
-        //TODO: to many Toast
-        insertUserToDB(uName, uEmail);
-        insertUserToFirebaseAuth(uEmail, uPassword);
-
-        updateUI(R.color.zergPurple, false);
+        signUpUser(uName, uEmail, uPassword);
+        //
     }
 
     /**
@@ -171,11 +168,12 @@ public class SignUpActivity extends AppCompatActivity {
      * @param uEmail
      * @param uPassword
      */
-    private void insertUserToFirebaseAuth(String uEmail, String uPassword) {
+    private void signUpUser(String uName, String uEmail, String uPassword) {
         mAuth.getFirebase().createUserWithEmailAndPassword(uEmail, uPassword)
                 .addOnCompleteListener(SignUpActivity.this, task -> {
                     if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
+                        insertUserToDB(uName, uEmail); // Log the user to the real time database
+                        // Sign in success, start main activity with the signed-in user's information
                         intent = new Intent(SignUpActivity.this, MainActivity.class);
                         startActivity(intent);
                         finish();
