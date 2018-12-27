@@ -3,10 +3,14 @@ package com.sc2guide.sc2_guides_android;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -18,9 +22,11 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +38,8 @@ import com.sc2guide.sc2_guides_android.view.common.ErrorFragment;
 import com.sc2guide.sc2_guides_android.view.guides.CreateGuideFragment;
 import com.sc2guide.sc2_guides_android.view.guides.GuideListFragment;
 import com.sc2guide.sc2_guides_android.view.users.ProfileFragment;
+
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener
@@ -45,8 +53,6 @@ public class MainActivity extends AppCompatActivity
     private GuideListFragment protossFragment;
     private GuideListFragment terranFragment;
     private ProfileFragment profileFragment;
-    private String currentFragTag;
-
     private CreateGuideFragment createGuideFragment;
 
     private Toolbar toolbar;
@@ -58,6 +64,9 @@ public class MainActivity extends AppCompatActivity
     private FragmentTransaction transaction;
     private ActionBarDrawerToggle toggle;
     private ProgressBar progressBar;
+
+    private final int PICK_IMAGE_REQUEST = 71;
+    private Uri filePath;
 
     private FirebaseAuthService mAuth;
 
@@ -99,9 +108,8 @@ public class MainActivity extends AppCompatActivity
                 "Terran Guides", "Learn how to fly buildings from base trades", "Terran", "TERRAN_GUIDE");
         protossFragment = GuideListFragment.newInstance(R.color.protossTeal, R.drawable.protoss_gradient,
                 "Protoss Guides", "Guides for the A-move bois", "Protoss", "PROTOSS_GUIDE");
-        // TODO: add user profile here later
+        // TODO: add more params later
         profileFragment = ProfileFragment.newInstance();
-        currentFragTag = "None";
     }
 
     // @effects: map variable to layout
@@ -169,9 +177,30 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-            /**
-             * @effects: handle drawer nav for guide list
-             */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Pick image as profile picture
+        if(requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
+                && data != null && data.getData() != null ) {
+            // get image path
+            filePath = data.getData();
+            try {
+                // change image view => picked img
+                ImageView imageView = findViewById(R.id.imageView2);
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
+                imageView.setImageBitmap(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    } // end on activity result
+
+    /**
+     * @effects: handle drawer nav for guide list
+     */
     public void navigateToFragment (Fragment fragment, String tag) {
         transaction = fragmentManager.beginTransaction();
         transaction.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right); // Animation
@@ -342,5 +371,9 @@ public class MainActivity extends AppCompatActivity
                 setNavMenuItemThemeColors(getResources().getColor(mainColor));
                 ab.setBackgroundDrawable(new ColorDrawable(getResources().getColor(mainColor)));
                 hView.setBackgroundResource(gradient);
+            }
+
+            public Uri getFilePath() {
+                return filePath;
             }
         }
