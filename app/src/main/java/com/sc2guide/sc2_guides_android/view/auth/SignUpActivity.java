@@ -27,7 +27,6 @@ import com.sc2guide.sc2_guides_android.data.model.User;
 import com.sc2guide.sc2_guides_android.service.FirebaseAuthService;
 
 public class SignUpActivity extends AppCompatActivity {
-    private FirebaseAuthService mAuth;
     private FirebaseController mFirebaseController;
     private Intent intent;
     private ActionBar ab;
@@ -106,7 +105,6 @@ public class SignUpActivity extends AppCompatActivity {
      * @effects: set up the mapping of variables in layout
      */
     private void setUpVarMap () {
-        mAuth = new FirebaseAuthService();
         mFirebaseController = new FirebaseController();
         editTxtEmail = findViewById(R.id.sign_up_email);
         editTxtName = findViewById(R.id.sign_up_name);
@@ -164,13 +162,14 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     /**
-     * @effects: insert the user to firebase auth
+     * @effects: sign up user using firebase authentication API
+     * @param uName
      * @param uEmail
      * @param uPassword
      */
     private void signUpUser(String uName, String uEmail, String uPassword) {
-        mAuth.getFirebase().createUserWithEmailAndPassword(uEmail, uPassword)
-                .addOnCompleteListener(SignUpActivity.this, task -> {
+        mFirebaseController.createUserWithEmailAndPassword(uEmail, uPassword,
+                task -> {
                     if (task.isSuccessful()) {
                         insertUserToDB(uName, uEmail); // Log the user to the real time database
                         // Sign in success, start main activity with the signed-in user's information
@@ -182,7 +181,10 @@ public class SignUpActivity extends AppCompatActivity {
                         String errMess = task.getException().getMessage();
                         Toast.makeText(SignUpActivity.this, "Error : " + errMess, Toast.LENGTH_SHORT).show();
                     }
-                }).addOnFailureListener(e -> Toast.makeText(SignUpActivity.this, "Something went wrong : " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                },
+                e -> {
+                    Toast.makeText(SignUpActivity.this, "Something went wrong : " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     /**
@@ -193,15 +195,12 @@ public class SignUpActivity extends AppCompatActivity {
     private void insertUserToDB(String uName, String uEmail) {
         try {
             User user = new User(uName, uEmail);
-            mFirebaseController.insertUser(user, new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(SignUpActivity.this, "User Created", Toast.LENGTH_SHORT).show();
-                    } else {
-                        String errMess = task.getException().getMessage();
-                        Toast.makeText(SignUpActivity.this, "Error : " + errMess, Toast.LENGTH_SHORT).show();
-                    }
+            mFirebaseController.insertUser(user, task -> {
+                if (task.isSuccessful()) {
+                    Toast.makeText(SignUpActivity.this, "User Created", Toast.LENGTH_SHORT).show();
+                } else {
+                    String errMess = task.getException().getMessage();
+                    Toast.makeText(SignUpActivity.this, "Error : " + errMess, Toast.LENGTH_SHORT).show();
                 }
             });
         } catch (Exception e) {

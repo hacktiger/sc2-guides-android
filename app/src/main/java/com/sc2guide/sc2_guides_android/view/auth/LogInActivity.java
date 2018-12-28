@@ -19,10 +19,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.sc2guide.sc2_guides_android.MainActivity;
 import com.sc2guide.sc2_guides_android.R;
+import com.sc2guide.sc2_guides_android.controller.FirebaseController;
 import com.sc2guide.sc2_guides_android.service.FirebaseAuthService;
 
 public class LogInActivity extends AppCompatActivity {
-    private FirebaseAuthService mAuth;
+    private FirebaseController mFirebaseController;
 
     private Intent intent;
     private ActionBar ab;
@@ -36,19 +37,14 @@ public class LogInActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
-        // Firebase stuff
-        mAuth = new FirebaseAuthService();
+        // Firebase controller
+        mFirebaseController = new FirebaseController();
         // Action Bar
         setUpActionBar();
         setUpVarMap ();
         setUpHideKeyBoard();
         //
-        logInBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                handleLogIn(v);
-            }
-        });
+        logInBtn.setOnClickListener(v -> handleLogIn(v));
     }
 
     /**
@@ -87,16 +83,11 @@ public class LogInActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        if (mAuth.currentUser() != null) {
+        if (mFirebaseController.currentUser() != null) {
             intent = new Intent(LogInActivity.this, MainActivity.class);
             startActivity(intent);
             Toast.makeText(this, "User logged in", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    @Override
-    public void onBackPressed () {
-        // do nothing
     }
 
     private void setUpVarMap () {
@@ -108,6 +99,7 @@ public class LogInActivity extends AppCompatActivity {
 
     private void setUpActionBar () {
         ab = getSupportActionBar();
+        assert ab != null; //
         ab.setTitle("Log In");
         ab.setSubtitle("Login to start exploring sc2 guides");
     }
@@ -127,21 +119,20 @@ public class LogInActivity extends AppCompatActivity {
         }
         updateUI();
         // sign in with firebase
-        mAuth.getFirebase().signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(LogInActivity.this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            intent = new Intent(LogInActivity.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
-                        } else {
-                            String errMess = task.getException().getMessage();
-                            logInBtn.setBackgroundColor(Color.GREEN); // change to holo purple later
-                            spinner.setVisibility(View.INVISIBLE);
-                            Toast.makeText(LogInActivity.this, "Error : " + errMess, Toast.LENGTH_SHORT).show();
-                        }
+        mFirebaseController.signInWithEmailAndPassword(email, password,
+                task -> {
+                    if (task.isSuccessful()) {
+                        intent = new Intent(LogInActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        logInBtn.setBackgroundColor(Color.GREEN); // change to holo purple later
+                        spinner.setVisibility(View.INVISIBLE);
+                        Toast.makeText(LogInActivity.this, "Error : " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
+                },
+                e -> {
+                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 
@@ -150,6 +141,4 @@ public class LogInActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
-
-
 }
