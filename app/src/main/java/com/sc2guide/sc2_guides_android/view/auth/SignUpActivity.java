@@ -136,15 +136,15 @@ public class SignUpActivity extends AppCompatActivity {
         String uName = editTxtName.getText().toString();
         String uPassword = editTxtPassword.getText().toString();
         String uConfirmPassword = editTxtConfirmPassword.getText().toString();
-        // TODO: !important split to another validation method;
-        boolean checkPassword = validatePassword(uPassword, uConfirmPassword );
-        if(!checkPassword) {
-            Toast.makeText(this, "Passwords must match", Toast.LENGTH_SHORT).show();
+        // Validation for the password
+        String checkPasswordResult = validatePassword(uPassword, uConfirmPassword );
+        if(!checkPasswordResult.equals("OK")) {
+            Toast.makeText(this, checkPasswordResult, Toast.LENGTH_SHORT).show();
             updateUI(R.color.zergPurple, false);
             return;
         }
+        // if password is validated then sign up the user
         signUpUser(uName, uEmail, uPassword);
-        //
     }
 
     /**
@@ -209,7 +209,13 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
-    private boolean validatePassword(String uPassword, String uConfirmPassword) {
-        return (uPassword.equals(uConfirmPassword));
+    private String validatePassword(String uPassword, String uConfirmPassword) {
+        if (!uPassword.equals(uConfirmPassword)){
+            return "Password must match";
+        }
+        if (uPassword.length() < 6){
+            return "Password must contain more than 5 characters";
+        }
+        return "OK";
     }
 }

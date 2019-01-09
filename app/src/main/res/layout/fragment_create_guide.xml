@@ -67,32 +67,24 @@
                 android:inputType="textNoSuggestions" />
         </android.support.design.widget.TextInputLayout>
 
-        <!-- BODY Label -->
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-
-            <EditText
-                android:id="@+id/create_guide_body"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/create_guide_body"
-                android:inputType="textMultiLine|textNoSuggestions"
-                android:lines="10"
-                android:gravity="top|start" />
-        </android.support.design.widget.TextInputLayout>
-
-        <LinearLayout
-            android:id="@+id/create_guides_linear_layout"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/create_guides_recyler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp"
             tools:listitem="@layout/card">
-            <!-- TODO: change @layout/card to something else later-->
+        </android.support.v7.widget.RecyclerView>
+
+        <LinearLayout
+            android:id="@+id/create_guide_add_note_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+
         </LinearLayout>
 
         <!-- buttons for body edit -->
@@ -100,24 +92,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="10">
-
-            <android.support.v7.widget.AppCompatButton
-                android:id="@+id/create_guide_add_timing"
-                android:background="@android:color/holo_red_light"
-                android:layout_height="match_parent"
-                android:layout_width="wrap_content"
-                android:layout_weight="3"
-                android:layout_marginEnd="12dp"
-                android:text="Add Timing"
-                android:textColor="@android:color/white"/>
+            android:weightSum="8">
 
             <android.support.v7.widget.AppCompatButton
                 android:id="@+id/create_guide_add_note"
                 android:background="@android:color/holo_orange_light"
                 android:layout_height="match_parent"
                 android:layout_width="wrap_content"
-                android:layout_weight="3"
+                android:layout_weight="4"
                 android:layout_marginEnd="12dp"
                 android:text="Add Note"
                 android:textColor="@android:color/white"/>
@@ -127,7 +109,7 @@
                 android:background="@android:color/holo_blue_light"
                 android:layout_height="match_parent"
                 android:layout_width="wrap_content"
-                android:layout_weight="3"
+                android:layout_weight="4"
                 android:text="Add Desc"
                 android:textColor="@android:color/white"
                  />

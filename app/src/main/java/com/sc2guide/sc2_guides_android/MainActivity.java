@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity
                 "Terran Guides", "Learn how to fly buildings from base trades", "Terran", "TERRAN_GUIDE");
         protossFragment = GuideListFragment.newInstance(R.color.protossTeal, R.drawable.protoss_gradient,
                 "Protoss Guides", "Guides for the A-move bois", "Protoss", "PROTOSS_GUIDE");
-        // TODO: add more params later
+        // TODO: add more params
         profileFragment = ProfileFragment.newInstance();
     }
 
