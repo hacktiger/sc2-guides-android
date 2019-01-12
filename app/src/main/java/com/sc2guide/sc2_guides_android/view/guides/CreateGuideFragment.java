@@ -1,20 +1,15 @@
 package com.sc2guide.sc2_guides_android.view.guides;
 
-import android.content.ClipData;
 import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -25,7 +20,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sc2guide.sc2_guides_android.MainActivity;
@@ -34,10 +28,7 @@ import com.sc2guide.sc2_guides_android.adapter.RecyclerListAdapter;
 import com.sc2guide.sc2_guides_android.adapter.helper.SimpleItemTouchHelperCallback;
 import com.sc2guide.sc2_guides_android.controller.FirebaseController;
 import com.sc2guide.sc2_guides_android.data.model.Guide;
-import com.sc2guide.sc2_guides_android.data.model.GuideBodyItem;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -65,14 +56,13 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
     private Button addNoteBtn;
     private Button addDescBtn;
     private RecyclerView recyclerView;
-    private LinearLayout.LayoutParams layoutParams;
-
+    // helper
+    private ItemTouchHelper mItemTouchHelper;
+    private RecyclerListAdapter recyclerListAdapter;
+    // Strings
     private String myRace;
     private String opRace;
-
-    private List<GuideBodyItem> mList = new ArrayList<>();
-
-
+    // controller
     private FirebaseController mFirebaseController;
 
     public CreateGuideFragment() {
@@ -106,9 +96,7 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
         return inflater.inflate(R.layout.fragment_create_guide, container, false);
     }
 
-    //TODO:A
-    private ItemTouchHelper mItemTouchHelper;
-    private RecyclerListAdapter recylerListAdapter;
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -121,13 +109,13 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
         /**
          * set up itemTouchHelper for the list of notes/desc/timing
          */
-        recylerListAdapter = new RecyclerListAdapter();
+        recyclerListAdapter = new RecyclerListAdapter();
         //
         recyclerView.setHasFixedSize(false);
-        recyclerView.setAdapter(recylerListAdapter);
+        recyclerView.setAdapter(recyclerListAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         //
-        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(recylerListAdapter);
+        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(recyclerListAdapter);
         mItemTouchHelper = new ItemTouchHelper(callback);
         mItemTouchHelper.attachToRecyclerView(recyclerView);
     }
@@ -174,8 +162,7 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
                 return;
             }
             String type = getResources().getString(R.string.guide_body_item_type_note);
-            recylerListAdapter.addItem(type, body);
-            mList.add(new GuideBodyItem(type, body));
+            recyclerListAdapter.addItem(type, body);
 
             mLayout.removeView(linearLayout);
         });
@@ -187,7 +174,6 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
 
     private void addDesc() {
         // TODO: swapping item is a little unresponsive sometimes
-        // TODO: change color of item
         LinearLayout mLayout = Objects.requireNonNull(getView()).findViewById(R.id.create_guide_add_note_layout);
         // TODO: rename linearlayout + change layout to prettier
         LinearLayout linearLayout = new LinearLayout(getActivity());
@@ -209,8 +195,7 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
                 return;
             }
             String type = getResources().getString(R.string.guide_body_item_type_desc);
-            recylerListAdapter.addItem(type, body);
-            mList.add(new GuideBodyItem(type, body));
+            recyclerListAdapter.addItem(type, body);
             //
             mLayout.removeView(linearLayout);
         });
@@ -221,12 +206,11 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
     }
 
     /**
-     * @effects: handle adding the guide to firebase database
+     * @effects: main method to handle adding the guide to firebase database
      */
     private void createGuide() {
         // Manage what happens if user click confirm to create guide
-        Log.d("ZZLLL","STARTED");
-        updateUI(Color.GRAY, true);
+        updateProgressBarAndBtn(Color.GRAY, true);
         // author information
         String userEmail = ((MainActivity) Objects.requireNonNull(getActivity())).getUserEmail();
         String uid = ((MainActivity) getActivity()).getUserId();
@@ -235,12 +219,12 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
         Guide guide;
 
         try {
-            guide = new Guide(guideTitle.getText().toString(), "22ERTY", myRace, opRace ,uid, userEmail, mList);
+            guide = new Guide(guideTitle.getText().toString(), "22ERTY", myRace, opRace ,uid, userEmail, recyclerListAdapter.getmItems());
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(getActivity(), "Some fields are empty", Toast.LENGTH_SHORT).show();
             // if not successful then change back the UI and return from the method
-            updateUI(Color.GREEN, false);
+            updateProgressBarAndBtn(Color.GREEN, false);
             return;
         }
         // insert the guide to firebase database
@@ -248,11 +232,11 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
             if(task.isSuccessful()){
                 Toast.makeText(getActivity(), "Guide created", Toast.LENGTH_SHORT).show();
             } else {
+                updateProgressBarAndBtn(Color.GREEN, false);
                 Toast.makeText(getActivity(), "Error! not created", Toast.LENGTH_SHORT).show();
             }
         });
-
-        updateUI(Color.GREEN, false);
+        updateProgressBarAndBtn(Color.GREEN, false);
     }
 
     /**
@@ -261,7 +245,7 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
      * @param btnColor
      * @param isVisible
      */
-    private void updateUI (int btnColor, boolean isVisible) {
+    private void updateProgressBarAndBtn (int btnColor, boolean isVisible) {
         guideCreateBtn.setBackgroundColor(btnColor);
         if (isVisible) {
             progressBar.setVisibility(View.VISIBLE);
@@ -277,7 +261,7 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
      */
     private void setUpMapVariable () {
         //
-        layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.setMargins(0,10,0,10);
         //
         guideTitle = Objects.requireNonNull(getView()).findViewById(R.id.create_guide_title);
@@ -296,7 +280,7 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
     private void setUpSpinner() {
         // spinner for my race
         spinner = (Spinner) Objects.requireNonNull(getView()).findViewById(R.id.create_guide_spinner_my_race);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(Objects.requireNonNull(getActivity()),
                 R.array.race_option, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);

@@ -50,7 +50,6 @@ public class AllGuideViewModel extends ViewModel {
                                 if (snapshot.child("guideBodyItems").exists()){
                                     for(DataSnapshot mySnap : snapshot.child("guideBodyItems").getChildren()){
                                         GuideBodyItem item = new GuideBodyItem(mySnap.child("type").toString(), mySnap.child("body").toString());
-                                        Log.d("ZZZLLL", "type: " + item.getType() + "  , body" + item.getBody());
                                         mList.add(item);
                                     }
                                 }
