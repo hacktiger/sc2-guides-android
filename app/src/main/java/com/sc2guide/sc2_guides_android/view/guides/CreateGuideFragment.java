@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -190,6 +189,7 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
         confirm.setText("Confirm");
         confirm.setOnClickListener(v -> {
             String body = mEditTxt.getText().toString();
+
             if (body.length() == 0) {
                 Toast.makeText(getActivity(), "Fill the void pls :( ", Toast.LENGTH_SHORT).show();
                 return;
