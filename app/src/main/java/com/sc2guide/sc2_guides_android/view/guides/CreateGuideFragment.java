@@ -34,7 +34,10 @@ import com.sc2guide.sc2_guides_android.adapter.RecyclerListAdapter;
 import com.sc2guide.sc2_guides_android.adapter.helper.SimpleItemTouchHelperCallback;
 import com.sc2guide.sc2_guides_android.controller.FirebaseController;
 import com.sc2guide.sc2_guides_android.data.model.Guide;
+import com.sc2guide.sc2_guides_android.data.model.GuideBodyItem;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -66,6 +69,9 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
 
     private String myRace;
     private String opRace;
+
+    private List<GuideBodyItem> mList = new ArrayList<>();
+
 
     private FirebaseController mFirebaseController;
 
@@ -139,46 +145,79 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
         });
     }
 
-    // TODO: 1. add tag to keep track of the edit texts
+    // TODO: 1. add tag to keep track of the edit texts ?
     // TODO: 2. add a way to edit?/save?/delete the newly added stuffs
     // TODO: 3. find a way to save to database
 
     private void addNote() {
-        // TODO: change to add real item. Note: only allow create 1 at a time and then can drag possitions later
         // TODO: swapping item is a little unresponsive sometimes
-        LinearLayout mLayout = getView().findViewById(R.id.create_guide_add_note_layout);
+        // TODO: change color of item
+        LinearLayout mLayout = Objects.requireNonNull(getView()).findViewById(R.id.create_guide_add_note_layout);
         // TODO: rename linearlayout + change layout to prettier
         LinearLayout linearLayout = new LinearLayout(getActivity());
         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
         linearLayout.setWeightSum(100f);
         EditText mEditTxt = new EditText(getActivity());
-        mEditTxt.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if(!hasFocus) {
-                    hideKeyBoard();
-                }
-            }
+        mEditTxt.setHint("Add Note here...");
+        mEditTxt.setOnFocusChangeListener((v, hasFocus) -> {
+            if(!hasFocus) { hideKeyBoard(); }
         });
+        mEditTxt.setSingleLine(false);
+        mEditTxt.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
         Button confirm = new Button(getActivity());
-        confirm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        confirm.setText("Confirm");
+        confirm.setOnClickListener(v -> {
+            String body = mEditTxt.getText().toString();
 
-                String body = mEditTxt.getText().toString();
-
-                recylerListAdapter.addItem(body);
-
-                mLayout.removeView(linearLayout);
+            if (body.length() == 0) {
+                Toast.makeText(getActivity(), "Fill the void pls :( ", Toast.LENGTH_SHORT).show();
+                return;
             }
+            String type = getResources().getString(R.string.guide_body_item_type_note);
+            recylerListAdapter.addItem(type, body);
+            mList.add(new GuideBodyItem(type, body));
+
+            mLayout.removeView(linearLayout);
         });
         linearLayout.addView(mEditTxt);
         linearLayout.addView(confirm);
-
+        // add the linear layout
         mLayout.addView(linearLayout);
     }
 
     private void addDesc() {
+        // TODO: swapping item is a little unresponsive sometimes
+        // TODO: change color of item
+        LinearLayout mLayout = Objects.requireNonNull(getView()).findViewById(R.id.create_guide_add_note_layout);
+        // TODO: rename linearlayout + change layout to prettier
+        LinearLayout linearLayout = new LinearLayout(getActivity());
+        linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+        linearLayout.setWeightSum(100f);
+        EditText mEditTxt = new EditText(getActivity());
+        mEditTxt.setHint("Add description here...");
+        mEditTxt.setOnFocusChangeListener((v, hasFocus) -> {
+            if(!hasFocus) { hideKeyBoard(); }
+        });
+        mEditTxt.setSingleLine(false);
+        mEditTxt.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
+        Button confirm = new Button(getActivity());
+        confirm.setText("Confirm");
+        confirm.setOnClickListener(v -> {
+            String body = mEditTxt.getText().toString();
+            if (body.length() == 0) {
+                Toast.makeText(getActivity(), "Fill the void pls :( ", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            String type = getResources().getString(R.string.guide_body_item_type_desc);
+            recylerListAdapter.addItem(type, body);
+            mList.add(new GuideBodyItem(type, body));
+            //
+            mLayout.removeView(linearLayout);
+        });
+        linearLayout.addView(mEditTxt);
+        linearLayout.addView(confirm);
+        // add the linear layout
+        mLayout.addView(linearLayout);
     }
 
     /**
@@ -194,12 +233,12 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
         // TODO: change to user name instead of email later
         // init the guide to the model
         Guide guide;
-        try {   //TODO: change format of guide to add to db
-            guide = new Guide(guideTitle.getText().toString(), "SOMETHING", myRace, opRace ,uid, userEmail);
+
+        try {
+            guide = new Guide(guideTitle.getText().toString(), "22ERTY", myRace, opRace ,uid, userEmail, mList);
         } catch (Exception e) {
             e.printStackTrace();
-            Log.d("ZZLLL", e.getMessage());
-            Toast.makeText(getActivity(), "Please fill the guide", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Some fields are empty", Toast.LENGTH_SHORT).show();
             // if not successful then change back the UI and return from the method
             updateUI(Color.GREEN, false);
             return;

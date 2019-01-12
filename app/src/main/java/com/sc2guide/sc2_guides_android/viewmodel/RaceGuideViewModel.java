@@ -10,6 +10,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.sc2guide.sc2_guides_android.data.model.Guide;
+import com.sc2guide.sc2_guides_android.data.model.GuideBodyItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,9 +46,13 @@ public class RaceGuideViewModel extends ViewModel {
                                 String op_race = snapshot.child("opRace").getValue().toString();
                                 String author_id = snapshot.child("authorId").getValue().toString();
                                 String author_email = snapshot.child("authorName").getValue().toString();
-
+                                List<GuideBodyItem> mList = new ArrayList<>();
+                                for(DataSnapshot mySnap : snapshot.child("guideBodyItems").getChildren()){
+                                    GuideBodyItem item = new GuideBodyItem(mySnap.child("type").toString(), mySnap.child("body").toString());
+                                    mList.add(item);
+                                }
                                 try {
-                                    listGuides.add(new Guide(title,body,my_race,op_race,author_id,author_email));
+                                    listGuides.add(new Guide(title,body,my_race,op_race,author_id,author_email, mList));
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }

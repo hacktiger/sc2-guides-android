@@ -4,12 +4,14 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.sc2guide.sc2_guides_android.data.model.Guide;
+import com.sc2guide.sc2_guides_android.data.model.GuideBodyItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +33,7 @@ public class AllGuideViewModel extends ViewModel {
         // Do async operation to fetch guides
         FirebaseDatabase.getInstance()
                 .getReference(reference)
+                .orderByKey()
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -43,9 +46,17 @@ public class AllGuideViewModel extends ViewModel {
                                 String op_race = snapshot.child("opRace").getValue().toString();
                                 String author_id = snapshot.child("authorId").getValue().toString();
                                 String author_email = snapshot.child("authorName").getValue().toString();
+                                List<GuideBodyItem> mList = new ArrayList<>();
+                                if (snapshot.child("guideBodyItems").exists()){
+                                    for(DataSnapshot mySnap : snapshot.child("guideBodyItems").getChildren()){
+                                        GuideBodyItem item = new GuideBodyItem(mySnap.child("type").toString(), mySnap.child("body").toString());
+                                        Log.d("ZZZLLL", "type: " + item.getType() + "  , body" + item.getBody());
+                                        mList.add(item);
+                                    }
+                                }
 
                                 try {
-                                    listGuides.add(new Guide(title,body,my_race,op_race,author_id,author_email));
+                                    listGuides.add(new Guide(title,body,my_race,op_race,author_id,author_email, mList));
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }

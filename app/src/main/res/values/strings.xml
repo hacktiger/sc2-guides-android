@@ -44,6 +44,8 @@
     <string name="create_guide">Create Guide</string>
     <string name="create_guide_body">What is the guide about...</string>
     <string name="nav_profile">Profile</string>
+    <string name="guide_body_item_type_note">Note</string>
+    <string name="guide_body_item_type_desc">Desc</string>
 
     <string-array name="race_option">
         <item name="race_option_zerg">Zerg</item>

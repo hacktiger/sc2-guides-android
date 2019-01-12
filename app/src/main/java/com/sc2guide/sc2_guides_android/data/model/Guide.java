@@ -1,6 +1,7 @@
 package com.sc2guide.sc2_guides_android.data.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Guide implements Serializable {
 
@@ -10,12 +11,21 @@ public class Guide implements Serializable {
     private String authorName;
     private String myRace;
     private String opRace;
+    private List<GuideBodyItem> guideBodyItems;
 
     public Guide () {
         //
     }
 
-    public Guide(String title, String body, String myRace, String opRace, String authorId, String authorName) throws Exception{
+    public List<GuideBodyItem> getGuideBodyItems() {
+        return guideBodyItems;
+    }
+
+    public void setGuideBodyItems(List<GuideBodyItem> guideBodyItems) {
+        this.guideBodyItems = guideBodyItems;
+    }
+
+    public Guide(String title, String body, String myRace, String opRace, String authorId, String authorName, List<GuideBodyItem> arr) throws Exception{
         if (validateTitle(title) && validateRace(myRace) && validateRace(opRace) && validateAuthorId(authorId) && validateAuthorName(authorName)){
             this.title = title;
             this.body = body;
@@ -23,6 +33,7 @@ public class Guide implements Serializable {
             this.opRace = opRace;
             this.authorId = authorId;
             this.authorName = authorName;
+            this.guideBodyItems = arr;
         } else {
             throw new Exception("Cant create guide. Guide.constructor");
         }
@@ -115,4 +126,6 @@ public class Guide implements Serializable {
             throw new IllegalArgumentException("Author name is not validated");
         }
     }
+
+
 }
