@@ -12,6 +12,7 @@ public class Guide implements Serializable {
     private String myRace;
     private String opRace;
     private List<GuideBodyItem> guideBodyItems;
+    private long currentTime;
 
     public Guide () {
         //
@@ -25,7 +26,7 @@ public class Guide implements Serializable {
         this.guideBodyItems = guideBodyItems;
     }
 
-    public Guide(String title, String body, String myRace, String opRace, String authorId, String authorName, List<GuideBodyItem> arr) throws Exception{
+    public Guide(String title, String body, String myRace, String opRace, String authorId, String authorName, List<GuideBodyItem> arr, long currentTime) throws Exception{
         if (validateTitle(title) && validateRace(myRace) && validateRace(opRace) && validateAuthorId(authorId) && validateAuthorName(authorName)){
             this.title = title;
             this.body = body;
@@ -34,9 +35,18 @@ public class Guide implements Serializable {
             this.authorId = authorId;
             this.authorName = authorName;
             this.guideBodyItems = arr;
+            this.currentTime = currentTime;
         } else {
             throw new Exception("Cant create guide. Guide.constructor");
         }
+    }
+
+    public long getCurrentTime() {
+        return currentTime;
+    }
+
+    public void setCurrentTime(long currentTime) {
+        this.currentTime = currentTime;
     }
 
     private boolean validateTitle (String title) {

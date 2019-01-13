@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.sc2guide.sc2_guides_android.MainActivity;
 import com.sc2guide.sc2_guides_android.R;
+import com.sc2guide.sc2_guides_android.adapter.GuideAdapter;
 import com.sc2guide.sc2_guides_android.adapter.RecyclerListAdapter;
 import com.sc2guide.sc2_guides_android.adapter.helper.SimpleItemTouchHelperCallback;
 import com.sc2guide.sc2_guides_android.controller.FirebaseController;
@@ -132,10 +133,6 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
         });
     }
 
-    // TODO: 1. add tag to keep track of the edit texts ?
-    // TODO: 2. add a way to edit?/save?/delete the newly added stuffs
-    // TODO: 3. find a way to save to database
-
     private void addNote() {
         // TODO: swapping item is a little unresponsive sometimes
         // TODO: change color of item
@@ -219,7 +216,7 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
         Guide guide;
 
         try {
-            guide = new Guide(guideTitle.getText().toString(), "22ERTY", myRace, opRace ,uid, userEmail, recyclerListAdapter.getmItems());
+            guide = new Guide(guideTitle.getText().toString(), "22ERTY", myRace, opRace ,uid, userEmail, recyclerListAdapter.getmItems(), System.currentTimeMillis());
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(getActivity(), "Some fields are empty", Toast.LENGTH_SHORT).show();
@@ -231,6 +228,8 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
         mFirebaseController.insertGuide(guide, task -> {
             if(task.isSuccessful()){
                 Toast.makeText(getActivity(), "Guide created", Toast.LENGTH_SHORT).show();
+                GuideListFragment frag = GuideListFragment.getInstance();
+                frag.getAdapter().notifyItemInserted(frag.getAdapter().getItemCount());
             } else {
                 updateProgressBarAndBtn(Color.GREEN, false);
                 Toast.makeText(getActivity(), "Error! not created", Toast.LENGTH_SHORT).show();
