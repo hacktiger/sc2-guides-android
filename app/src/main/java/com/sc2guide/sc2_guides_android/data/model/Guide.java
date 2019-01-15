@@ -6,7 +6,6 @@ import java.util.List;
 public class Guide implements Serializable {
 
     private String title;
-    private String body;
     private String authorId;
     private String authorName;
     private String myRace;
@@ -26,10 +25,9 @@ public class Guide implements Serializable {
         this.guideBodyItems = guideBodyItems;
     }
 
-    public Guide(String title, String body, String myRace, String opRace, String authorId, String authorName, List<GuideBodyItem> arr, long currentTime) throws Exception{
+    public Guide(String title, String myRace, String opRace, String authorId, String authorName, List<GuideBodyItem> arr, long currentTime) throws Exception{
         if (validateTitle(title) && validateRace(myRace) && validateRace(opRace) && validateAuthorId(authorId) && validateAuthorName(authorName)){
             this.title = title;
-            this.body = body;
             this.myRace = myRace;
             this.opRace = opRace;
             this.authorId = authorId;
@@ -74,18 +72,6 @@ public class Guide implements Serializable {
             this.title = title;
         } else {
             throw new IllegalArgumentException("Title is not validated");
-        }
-    }
-
-    public String getBody() {
-        return body;
-    }
-
-    public void setBody(String body) {
-        if (validateTitle(body)) {
-            this.body = body;
-        } else {
-            throw new IllegalArgumentException("Body is not validated");
         }
     }
 
@@ -136,6 +122,8 @@ public class Guide implements Serializable {
             throw new IllegalArgumentException("Author name is not validated");
         }
     }
+
+
 
 
 }

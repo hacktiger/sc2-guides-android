@@ -21,17 +21,24 @@ public class AllGuideViewModel extends ViewModel {
     private MutableLiveData<List<Guide>> allGuides;
     private String reference = "guides";
 
-    public LiveData<List<Guide>> getAllGuides() {
+    public LiveData<List<Guide>> getAllGuides(boolean forceUpdate) {
+        if (forceUpdate) {
+            Log.d("QQPP", "AllguidViewModel.getAllGuide().forceUpdate");
+
+            loadAllGuides();
+        }
+        // TODO: pagination
         if (allGuides == null) {
+            Log.d("QQPP", "AllguidViewModel.getAllGuide().all == null");
+
             allGuides = new MutableLiveData<>();
             loadAllGuides();
         }
-
         return allGuides;
     }
 
-    // TODO: listen to child addded
     private  void  loadAllGuides() {
+        Log.d("QQPP", "AllguidViewModel.loadAllGuides()");
         // Do async operation to fetch guides
         FirebaseDatabase.getInstance()
                 .getReference(reference)
@@ -42,37 +49,40 @@ public class AllGuideViewModel extends ViewModel {
                         if (dataSnapshot.exists()) {
                             List<Guide> tempListGuide = new ArrayList<>();
                             for(DataSnapshot snapshot: dataSnapshot.getChildren()){
-                                String title = snapshot.child("title").getValue().toString();
-                                String body = snapshot.child("body").getValue().toString();
-                                String my_race = snapshot.child("myRace").getValue().toString();
-                                String op_race = snapshot.child("opRace").getValue().toString();
-                                String author_id = snapshot.child("authorId").getValue().toString();
-                                String author_email = snapshot.child("authorName").getValue().toString();
-                                long current_time = (long) snapshot.child("currentTime").getValue();
-
-                                List<GuideBodyItem> mList = new ArrayList<>();
-
-                                for(DataSnapshot mySnap : snapshot.child("guideBodyItems").getChildren()){
-                                    GuideBodyItem item = new GuideBodyItem(mySnap.child("type").toString(), mySnap.child("body").toString());
-                                    mList.add(item);
-                                }
-
                                 try {
-                                    tempListGuide.add(new Guide(title,body,my_race,op_race,author_id,author_email, mList, current_time));
+                                    // get all the attributes
+                                    String title = snapshot.child("title").getValue().toString();
+                                    String my_race = snapshot.child("myRace").getValue().toString();
+                                    String op_race = snapshot.child("opRace").getValue().toString();
+                                    String author_id = snapshot.child("authorId").getValue().toString();
+                                    String author_email = snapshot.child("authorName").getValue().toString();
+                                    long current_time = (long) snapshot.child("currentTime").getValue();
+                                    // list to hold all the guide body items
+                                    List<GuideBodyItem> mList = new ArrayList<>();
+                                    // get guide body items
+                                    for(DataSnapshot mySnap : snapshot.child("guideBodyItems").getChildren()){
+                                        GuideBodyItem item = new GuideBodyItem(mySnap.child("type").getValue().toString(), mySnap.child("body").getValue().toString());
+                                        mList.add(item);
+                                    }
+                                    Log.d("QQPP", "WOAHHHHH");
+
+                                    // add the snapshot to the temp list
+                                    tempListGuide.add(new Guide(title,my_race,op_race,author_id,author_email, mList, current_time));
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
                             }
-
+                            // reverse the temp list
                             Collections.reverse(tempListGuide);
+                            Log.d("QQPP", "soze :" + tempListGuide.size());
 
+                            // set value to the mutable live data
                             allGuides.setValue(tempListGuide);
                         }
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-                        //
                         databaseError.getCode();
                     }
                 });

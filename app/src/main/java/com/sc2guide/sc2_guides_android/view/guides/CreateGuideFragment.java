@@ -216,7 +216,7 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
         Guide guide;
 
         try {
-            guide = new Guide(guideTitle.getText().toString(), "22ERTY", myRace, opRace ,uid, userEmail, recyclerListAdapter.getmItems(), System.currentTimeMillis());
+            guide = new Guide(guideTitle.getText().toString(), myRace, opRace ,uid, userEmail, recyclerListAdapter.getmItems(), System.currentTimeMillis());
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(getActivity(), "Some fields are empty", Toast.LENGTH_SHORT).show();
@@ -228,8 +228,14 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
         mFirebaseController.insertGuide(guide, task -> {
             if(task.isSuccessful()){
                 Toast.makeText(getActivity(), "Guide created", Toast.LENGTH_SHORT).show();
-                GuideListFragment frag = GuideListFragment.getInstance();
-                frag.getAdapter().notifyItemInserted(frag.getAdapter().getItemCount());
+                try {
+                    GuideListFragment frag = GuideListFragment.getInstance();
+                    frag.getAdapter().notifyItemInserted(frag.getAdapter().getItemCount());
+
+                } catch (Exception e) {
+                    System.err.print("ERROROROROROOROROOROROR");
+                    e.printStackTrace();
+                }
             } else {
                 updateProgressBarAndBtn(Color.GREEN, false);
                 Toast.makeText(getActivity(), "Error! not created", Toast.LENGTH_SHORT).show();
