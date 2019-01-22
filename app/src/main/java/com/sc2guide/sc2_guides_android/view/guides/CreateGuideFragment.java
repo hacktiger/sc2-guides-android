@@ -29,7 +29,9 @@ import com.sc2guide.sc2_guides_android.adapter.helper.SimpleItemTouchHelperCallb
 import com.sc2guide.sc2_guides_android.controller.FirebaseController;
 import com.sc2guide.sc2_guides_android.data.model.Guide;
 
+import java.text.SimpleDateFormat;
 import java.util.Objects;
+import java.util.Date;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -45,7 +47,7 @@ import java.util.Objects;
  * 1. add timing (with time/ drone count)/ note(* yellow box)/ normal description (normal text)
  * 2. drag to change position
  */
-
+// TODO: maybe to activity instead ?
 public class CreateGuideFragment extends Fragment implements AdapterView.OnItemSelectedListener {
     private Spinner spinner;
     private Spinner spinner_op;
@@ -134,7 +136,6 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
     }
 
     private void addNote() {
-        // TODO: swapping item is a little unresponsive sometimes
         // TODO: change color of item
         LinearLayout mLayout = Objects.requireNonNull(getView()).findViewById(R.id.create_guide_add_note_layout);
         // TODO: rename linearlayout + change layout to prettier
@@ -169,7 +170,6 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
     }
 
     private void addDesc() {
-        // TODO: swapping item is a little unresponsive sometimes
         LinearLayout mLayout = Objects.requireNonNull(getView()).findViewById(R.id.create_guide_add_note_layout);
         // TODO: rename linearlayout + change layout to prettier
         LinearLayout linearLayout = new LinearLayout(getActivity());
@@ -209,14 +209,17 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
         // Manage what happens if user click confirm to create guide
         updateProgressBarAndBtn(Color.GRAY, true);
         // author information
+        // TODO: bundle to user information rather than this
         String userEmail = ((MainActivity) Objects.requireNonNull(getActivity())).getUserEmail();
         String uid = ((MainActivity) getActivity()).getUserId();
-        // TODO: change to user name instead of email later
         // init the guide to the model
         Guide guide;
-
+        // get current date
+        String strCurrentDate = getCurrentDate();
+        //
         try {
-            guide = new Guide(guideTitle.getText().toString(), myRace, opRace ,uid, userEmail, recyclerListAdapter.getmItems(), System.currentTimeMillis());
+            guide = new Guide("0", guideTitle.getText().toString(), myRace, opRace ,
+                    uid, userEmail, recyclerListAdapter.getmItems(), strCurrentDate);
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(getActivity(), "Some fields are empty", Toast.LENGTH_SHORT).show();
@@ -233,7 +236,7 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
                     frag.getAdapter().notifyItemInserted(frag.getAdapter().getItemCount());
 
                 } catch (Exception e) {
-                    System.err.print("ERROROROROROOROROOROROR");
+                    System.err.print("CreateGuideFragment.createGuide().mFirebaseController.notifyItemInserted");
                     e.printStackTrace();
                 }
             } else {
@@ -242,6 +245,15 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
             }
         });
         updateProgressBarAndBtn(Color.GREEN, false);
+    }
+
+    private String getCurrentDate() {
+        Date date = new Date();
+        Date newDate = new Date(date.getTime() + (604800000L * 2) + (24 * 60 * 60));
+        SimpleDateFormat dt = new SimpleDateFormat("HH:mm:ss dd-MM-yyyy");
+        return dt.format(newDate);
+
+
     }
 
     /**

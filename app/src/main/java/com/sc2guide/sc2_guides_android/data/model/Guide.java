@@ -1,17 +1,20 @@
 package com.sc2guide.sc2_guides_android.data.model;
 
+import com.sc2guide.sc2_guides_android.error.NotPossibleException;
+
 import java.io.Serializable;
 import java.util.List;
 
 public class Guide implements Serializable {
 
+    private String id;
     private String title;
     private String authorId;
     private String authorName;
     private String myRace;
     private String opRace;
     private List<GuideBodyItem> guideBodyItems;
-    private long currentTime;
+    private String date;
 
     public Guide () {
         //
@@ -25,26 +28,43 @@ public class Guide implements Serializable {
         this.guideBodyItems = guideBodyItems;
     }
 
-    public Guide(String title, String myRace, String opRace, String authorId, String authorName, List<GuideBodyItem> arr, long currentTime) throws Exception{
-        if (validateTitle(title) && validateRace(myRace) && validateRace(opRace) && validateAuthorId(authorId) && validateAuthorName(authorName)){
+    public Guide(String id, String title, String myRace, String opRace, String authorId, String authorName, List<GuideBodyItem> arr, String date) throws NotPossibleException {
+        if (validateId(id) && validateTitle(title) && validateRace(myRace) && validateRace(opRace) && validateAuthorId(authorId) && validateAuthorName(authorName)){
+            this.id = id;
             this.title = title;
             this.myRace = myRace;
             this.opRace = opRace;
             this.authorId = authorId;
             this.authorName = authorName;
             this.guideBodyItems = arr;
-            this.currentTime = currentTime;
+            this.date = date;
         } else {
-            throw new Exception("Cant create guide. Guide.constructor");
+            throw new NotPossibleException("Cant create guide. Guide.constructor");
         }
     }
 
-    public long getCurrentTime() {
-        return currentTime;
+    private boolean validateId(String id) {
+        return (!id.isEmpty());
     }
 
-    public void setCurrentTime(long currentTime) {
-        this.currentTime = currentTime;
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        if(validateId(id)){
+            this.id = id;
+        } else {
+            throw new IllegalArgumentException("Guide.setId() : id not validated");
+        }
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 
     private boolean validateTitle (String title) {
@@ -71,7 +91,7 @@ public class Guide implements Serializable {
         if (validateTitle(title)) {
             this.title = title;
         } else {
-            throw new IllegalArgumentException("Title is not validated");
+            throw new IllegalArgumentException("Guide.setTitle(): Title is not validated");
         }
     }
 
@@ -83,7 +103,7 @@ public class Guide implements Serializable {
         if(validateRace(myRace)){
             this.myRace = myRace;
         } else {
-            throw new IllegalArgumentException("My Race not validated");
+            throw new IllegalArgumentException("Guide.setMyRace(): My Race not validated");
         }
     }
 
@@ -95,7 +115,7 @@ public class Guide implements Serializable {
         if(validateRace(opRace)){
             this.opRace = opRace;
         } else {
-            throw new IllegalArgumentException("Opponent Race not validated");
+            throw new IllegalArgumentException("Guide.setOpRace(): Opponent Race not validated");
         }
     }
 
@@ -107,7 +127,7 @@ public class Guide implements Serializable {
         if (validateTitle(authorId)) {
             this.authorId = authorId;
         } else {
-            throw new IllegalArgumentException("Author id is not validated");
+            throw new IllegalArgumentException("Guide.setAuthorId(): Author id is not validated");
         }
     }
 
@@ -119,11 +139,7 @@ public class Guide implements Serializable {
         if (validateTitle(authorName)) {
             this.authorName = authorName;
         } else {
-            throw new IllegalArgumentException("Author name is not validated");
+            throw new IllegalArgumentException("Guide.setAuthorName(): Author name is not validated");
         }
     }
-
-
-
-
 }

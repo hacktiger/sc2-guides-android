@@ -44,19 +44,20 @@ public class RaceGuideViewModel extends ViewModel {
                             List<Guide> tempGuidesList = new ArrayList<>();
                             for(DataSnapshot snapshot: dataSnapshot.getChildren()){
                                 try {
+                                    String id = snapshot.getKey();
                                     String title = snapshot.child("title").getValue().toString();
                                     String my_race = snapshot.child("myRace").getValue().toString();
                                     String op_race = snapshot.child("opRace").getValue().toString();
                                     String author_id = snapshot.child("authorId").getValue().toString();
                                     String author_email = snapshot.child("authorName").getValue().toString();
-                                    long current_time = (long) snapshot.child("currentTime").getValue();
+                                    String current_time =  snapshot.child("date").getValue().toString();
                                     List<GuideBodyItem> mList = new ArrayList<>();
                                     for(DataSnapshot mySnap : snapshot.child("guideBodyItems").getChildren()){
                                         GuideBodyItem item = new GuideBodyItem(mySnap.child("type").toString(), mySnap.child("body").toString());
                                         mList.add(item);
                                     }
 
-                                    tempGuidesList.add(new Guide(title,my_race,op_race,author_id,author_email, mList, current_time));
+                                    tempGuidesList.add(new Guide(id, title,my_race,op_race,author_id,author_email, mList, current_time));
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                     // TODO: print error somewhere else

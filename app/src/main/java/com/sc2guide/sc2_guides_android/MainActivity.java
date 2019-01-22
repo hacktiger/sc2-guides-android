@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        setUpVariableMap(); // map variable to view comps
+        setUpMapVariable(); // map variable to view comps
         setUpToolBar();// set up toolbar
         ab = getSupportActionBar(); // must be below toolbar lel
         setUpFab ();
@@ -106,21 +106,19 @@ public class MainActivity extends AppCompatActivity
                 "Terran Guides", "Learn how to fly buildings from base trades", "Terran", "TERRAN_GUIDE");
         protossFragment = GuideListFragment.newInstance(R.color.protossTeal, R.drawable.protoss_gradient,
                 "Protoss Guides", "Guides for the A-move bois", "Protoss", "PROTOSS_GUIDE");
-        // TODO: add more params
         profileFragment = ProfileFragment.newInstance();
     }
 
     // @effects: map variable to layout
-    private void setUpVariableMap() {
+    private void setUpMapVariable() {
         mAuth = new FirebaseAuthService();
         fragmentManager = getSupportFragmentManager();
         // get the reference in header for variable
         NavigationView headerView = findViewById(R.id.nav_view);
         hView = headerView.getHeaderView(0);
-        // map variable
+        // map variables
         userName = hView.findViewById(R.id.nav_user_name);
         userEmail = hView.findViewById(R.id.nav_user_email);
-
         progressBar = findViewById(R.id.content_main_progress);
     }
 

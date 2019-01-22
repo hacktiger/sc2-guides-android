@@ -5,6 +5,7 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -23,22 +24,18 @@ public class AllGuideViewModel extends ViewModel {
 
     public LiveData<List<Guide>> getAllGuides(boolean forceUpdate) {
         if (forceUpdate) {
-            Log.d("QQPP", "AllguidViewModel.getAllGuide().forceUpdate");
-
             loadAllGuides();
         }
-        // TODO: pagination
-        if (allGuides == null) {
-            Log.d("QQPP", "AllguidViewModel.getAllGuide().all == null");
 
+        if (allGuides == null) {
             allGuides = new MutableLiveData<>();
             loadAllGuides();
         }
+
         return allGuides;
     }
 
     private  void  loadAllGuides() {
-        Log.d("QQPP", "AllguidViewModel.loadAllGuides()");
         // Do async operation to fetch guides
         FirebaseDatabase.getInstance()
                 .getReference(reference)
@@ -51,12 +48,13 @@ public class AllGuideViewModel extends ViewModel {
                             for(DataSnapshot snapshot: dataSnapshot.getChildren()){
                                 try {
                                     // get all the attributes
+                                    String id = snapshot.getKey();
                                     String title = snapshot.child("title").getValue().toString();
                                     String my_race = snapshot.child("myRace").getValue().toString();
                                     String op_race = snapshot.child("opRace").getValue().toString();
                                     String author_id = snapshot.child("authorId").getValue().toString();
                                     String author_email = snapshot.child("authorName").getValue().toString();
-                                    long current_time = (long) snapshot.child("currentTime").getValue();
+                                    String current_time =  snapshot.child("date").getValue().toString();
                                     // list to hold all the guide body items
                                     List<GuideBodyItem> mList = new ArrayList<>();
                                     // get guide body items
@@ -64,18 +62,14 @@ public class AllGuideViewModel extends ViewModel {
                                         GuideBodyItem item = new GuideBodyItem(mySnap.child("type").getValue().toString(), mySnap.child("body").getValue().toString());
                                         mList.add(item);
                                     }
-                                    Log.d("QQPP", "WOAHHHHH");
-
                                     // add the snapshot to the temp list
-                                    tempListGuide.add(new Guide(title,my_race,op_race,author_id,author_email, mList, current_time));
+                                    tempListGuide.add(new Guide(id,title,my_race,op_race,author_id,author_email, mList, current_time));
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
                             }
                             // reverse the temp list
                             Collections.reverse(tempListGuide);
-                            Log.d("QQPP", "soze :" + tempListGuide.size());
-
                             // set value to the mutable live data
                             allGuides.setValue(tempListGuide);
                         }
