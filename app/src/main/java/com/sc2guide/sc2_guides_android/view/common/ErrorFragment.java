@@ -6,8 +6,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 
-import com.sc2guide.sc2_guides_android.MainActivity;
 import com.sc2guide.sc2_guides_android.R;
+import com.sc2guide.sc2_guides_android.view.MainActivity;
 
 public class ErrorFragment extends DialogFragment {
 

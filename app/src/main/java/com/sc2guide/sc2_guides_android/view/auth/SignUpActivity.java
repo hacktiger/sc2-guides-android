@@ -13,10 +13,10 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.sc2guide.sc2_guides_android.MainActivity;
 import com.sc2guide.sc2_guides_android.R;
 import com.sc2guide.sc2_guides_android.controller.FirebaseController;
 import com.sc2guide.sc2_guides_android.data.model.User;
+import com.sc2guide.sc2_guides_android.view.MainActivity;
 
 public class SignUpActivity extends AppCompatActivity {
     private FirebaseController mFirebaseController;

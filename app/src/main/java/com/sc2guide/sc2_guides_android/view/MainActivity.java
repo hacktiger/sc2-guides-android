@@ -1,4 +1,4 @@
-package com.sc2guide.sc2_guides_android;
+package com.sc2guide.sc2_guides_android.view;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -29,6 +29,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sc2guide.sc2_guides_android.R;
 import com.sc2guide.sc2_guides_android.data.model.Guide;
 import com.sc2guide.sc2_guides_android.service.FirebaseAuthService;
 import com.sc2guide.sc2_guides_android.view.auth.LogInActivity;
@@ -69,7 +70,7 @@ public class MainActivity extends AppCompatActivity
     private FirebaseAuthService mAuth;
 
 
-            @Override
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);

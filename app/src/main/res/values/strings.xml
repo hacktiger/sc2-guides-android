@@ -46,6 +46,10 @@
     <string name="nav_profile">Profile</string>
     <string name="guide_body_item_type_note">Note</string>
     <string name="guide_body_item_type_desc">Desc</string>
+    <string name="create_guide_main_title">CREATE YOUR OWN STARCRAFT2 GUIDE</string>
+    <string name="confirm_button">Confirm</string>
+    <string name="add_desc">Add Description</string>
+    <string name="add_note">Add Note</string>
 
     <string-array name="race_option">
         <item name="race_option_zerg">Zerg</item>

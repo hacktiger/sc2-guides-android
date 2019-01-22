@@ -4,17 +4,21 @@
     tools:showIn="navigation_view">
 
     <!-- check behavoir => choose selected item -->
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_all_guides"
-            android:icon="@drawable/ic_menu_home"
-            android:title="@string/nav_all_guides" />
-        <!-- TODO: problem: want to add profile to a separate group but then the drawer cant recognize that it is currently active -->
+    <group
+        android:id="@+id/drawer_profile_group"
+        android:checkableBehavior="single">
         <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/ic_nav_profile"
             android:title="@string/nav_profile"/>
-
+    </group>
+    <group
+        android:id="@+id/drawer_main_group"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_all_guides"
+            android:icon="@drawable/ic_menu_home"
+            android:title="@string/nav_all_guides" />
         <item
             android:id="@+id/nav_zerg_guides"
             android:icon="@drawable/ic_menu_zerg"

@@ -21,17 +21,16 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.sc2guide.sc2_guides_android.MainActivity;
 import com.sc2guide.sc2_guides_android.R;
-import com.sc2guide.sc2_guides_android.adapter.GuideAdapter;
-import com.sc2guide.sc2_guides_android.adapter.RecyclerListAdapter;
+import com.sc2guide.sc2_guides_android.adapter.CreateGuideBodyItemAdapter;
 import com.sc2guide.sc2_guides_android.adapter.helper.SimpleItemTouchHelperCallback;
 import com.sc2guide.sc2_guides_android.controller.FirebaseController;
 import com.sc2guide.sc2_guides_android.data.model.Guide;
+import com.sc2guide.sc2_guides_android.view.MainActivity;
 
 import java.text.SimpleDateFormat;
-import java.util.Objects;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -60,7 +59,7 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
     private RecyclerView recyclerView;
     // helper
     private ItemTouchHelper mItemTouchHelper;
-    private RecyclerListAdapter recyclerListAdapter;
+    private CreateGuideBodyItemAdapter createGuideBodyItemAdapter;
     // Strings
     private String myRace;
     private String opRace;
@@ -111,13 +110,13 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
         /**
          * set up itemTouchHelper for the list of notes/desc/timing
          */
-        recyclerListAdapter = new RecyclerListAdapter();
+        createGuideBodyItemAdapter = new CreateGuideBodyItemAdapter();
         //
         recyclerView.setHasFixedSize(false);
-        recyclerView.setAdapter(recyclerListAdapter);
+        recyclerView.setAdapter(createGuideBodyItemAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         //
-        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(recyclerListAdapter);
+        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(createGuideBodyItemAdapter);
         mItemTouchHelper = new ItemTouchHelper(callback);
         mItemTouchHelper.attachToRecyclerView(recyclerView);
     }
@@ -150,7 +149,7 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
         mEditTxt.setSingleLine(false);
         mEditTxt.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
         Button confirm = new Button(getActivity());
-        confirm.setText("Confirm");
+        confirm.setText(getResources().getString(R.string.confirm_button));
         confirm.setOnClickListener(v -> {
             String body = mEditTxt.getText().toString();
 
@@ -159,7 +158,7 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
                 return;
             }
             String type = getResources().getString(R.string.guide_body_item_type_note);
-            recyclerListAdapter.addItem(type, body);
+            createGuideBodyItemAdapter.addItem(type, body);
 
             mLayout.removeView(linearLayout);
         });
@@ -192,7 +191,7 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
                 return;
             }
             String type = getResources().getString(R.string.guide_body_item_type_desc);
-            recyclerListAdapter.addItem(type, body);
+            createGuideBodyItemAdapter.addItem(type, body);
             //
             mLayout.removeView(linearLayout);
         });
@@ -219,7 +218,7 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
         //
         try {
             guide = new Guide("0", guideTitle.getText().toString(), myRace, opRace ,
-                    uid, userEmail, recyclerListAdapter.getmItems(), strCurrentDate);
+                    uid, userEmail, createGuideBodyItemAdapter.getItems(), strCurrentDate);
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(getActivity(), "Some fields are empty", Toast.LENGTH_SHORT).show();

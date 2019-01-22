@@ -7,4 +7,6 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="font_size_16sp">16sp</dimen>
     <dimen name="text_input_margin_form">8dp</dimen>
+    <dimen name="guide_detail_container_margin">10dp</dimen>
+    <dimen name="body_item_padding">8dp</dimen>
 </resources>
