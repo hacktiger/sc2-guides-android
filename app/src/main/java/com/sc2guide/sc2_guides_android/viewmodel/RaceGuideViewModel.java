@@ -53,14 +53,13 @@ public class RaceGuideViewModel extends ViewModel {
                                     String current_time =  snapshot.child("date").getValue().toString();
                                     List<GuideBodyItem> mList = new ArrayList<>();
                                     for(DataSnapshot mySnap : snapshot.child("guideBodyItems").getChildren()){
-                                        GuideBodyItem item = new GuideBodyItem(mySnap.child("type").toString(), mySnap.child("body").toString());
+                                        GuideBodyItem item = new GuideBodyItem(mySnap.child("type").getValue().toString(), mySnap.child("body").getValue().toString());
                                         mList.add(item);
                                     }
 
                                     tempGuidesList.add(new Guide(id, title,my_race,op_race,author_id,author_email, mList, current_time));
                                 } catch (Exception e) {
                                     e.printStackTrace();
-                                    // TODO: print error somewhere else
                                 }
                             }
 

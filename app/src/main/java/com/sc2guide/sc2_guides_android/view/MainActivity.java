@@ -31,6 +31,7 @@ import android.widget.Toast;
 
 import com.sc2guide.sc2_guides_android.R;
 import com.sc2guide.sc2_guides_android.data.model.Guide;
+import com.sc2guide.sc2_guides_android.data.model.User;
 import com.sc2guide.sc2_guides_android.service.FirebaseAuthService;
 import com.sc2guide.sc2_guides_android.view.auth.LogInActivity;
 import com.sc2guide.sc2_guides_android.view.common.ErrorFragment;
@@ -68,6 +69,8 @@ public class MainActivity extends AppCompatActivity
     private Uri filePath;
 
     private FirebaseAuthService mAuth;
+
+    private User user;
 
 
     @Override
@@ -113,6 +116,8 @@ public class MainActivity extends AppCompatActivity
     // @effects: map variable to layout
     private void setUpMapVariable() {
         mAuth = new FirebaseAuthService();
+        // TODO: need to change later ?
+        user = new User(mAuth.currentUser().getUid(), mAuth.currentUser().getEmail());
         fragmentManager = getSupportFragmentManager();
         // get the reference in header for variable
         NavigationView headerView = findViewById(R.id.nav_view);
@@ -253,7 +258,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 // Navigate to create guide activity
-                createGuideFragment = CreateGuideFragment.newInstance();
+                createGuideFragment = CreateGuideFragment.newInstance(user);
                 makeTransaction(createGuideFragment, "CREATE_GUIDE_FRAGMENT", "CREATE_GUIDE", null);
             }
         });
