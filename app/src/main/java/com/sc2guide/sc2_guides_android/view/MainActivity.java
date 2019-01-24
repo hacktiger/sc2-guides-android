@@ -37,7 +37,8 @@ import com.sc2guide.sc2_guides_android.view.auth.LogInActivity;
 import com.sc2guide.sc2_guides_android.view.common.ErrorFragment;
 import com.sc2guide.sc2_guides_android.view.guides.CreateGuideFragment;
 import com.sc2guide.sc2_guides_android.view.guides.GuideListFragment;
-import com.sc2guide.sc2_guides_android.view.users.ProfileFragment;
+import com.sc2guide.sc2_guides_android.view.users.MyGuidesFragment;
+import com.sc2guide.sc2_guides_android.view.users.SavedGuidesFragment;
 
 import java.io.IOException;
 
@@ -52,7 +53,8 @@ public class MainActivity extends AppCompatActivity
     private GuideListFragment zergFragment;
     private GuideListFragment protossFragment;
     private GuideListFragment terranFragment;
-    private ProfileFragment profileFragment;
+    private MyGuidesFragment myGuidesFragment;
+    private SavedGuidesFragment savedGuidesFragment;
     private CreateGuideFragment createGuideFragment;
 
     private Toolbar toolbar;
@@ -110,7 +112,9 @@ public class MainActivity extends AppCompatActivity
                 "Terran Guides", "Learn how to fly buildings from base trades", "Terran", "TERRAN_GUIDE");
         protossFragment = GuideListFragment.newInstance(R.color.protossTeal, R.drawable.protoss_gradient,
                 "Protoss Guides", "Guides for the A-move bois", "Protoss", "PROTOSS_GUIDE");
-        profileFragment = ProfileFragment.newInstance();
+        // TODO: implement my guides and saved guides
+        savedGuidesFragment = SavedGuidesFragment.newInstance();
+        myGuidesFragment = MyGuidesFragment.newInstance();
     }
 
     // @effects: map variable to layout
@@ -137,7 +141,7 @@ public class MainActivity extends AppCompatActivity
             // back button return to previous fragment
             // but when no previous it does not return to login screen
             int backStackEntryCount = getSupportFragmentManager().getBackStackEntryCount(); // get backstack count
-
+            //
             if (backStackEntryCount != 0) {
                 super.onBackPressed();
             }
@@ -165,9 +169,11 @@ public class MainActivity extends AppCompatActivity
             navigateToFragment(protossFragment, "TERRAN");
         } else if (id == R.id.nav_terran_guides) {
             navigateToFragment(terranFragment, "PROTOSS");
-        } else if (id == R.id.nav_profile) {
-            navigateToFragment(profileFragment, "PROFILE");
-        } else if (id == R.id.nav_log_out) {
+        } else if (id == R.id.nav_my_guides) {
+            navigateToFragment(myGuidesFragment, "MY GUIDES");
+        } else if (id == R.id.nav_saved_guides) {
+            navigateToFragment(savedGuidesFragment, "SAVED GUIDES");
+        }else if (id == R.id.nav_log_out) {
             // Sign user out of Firebase and navigate back to login activity
             mAuth.signOut();
             startActivity(new Intent(MainActivity.this, LogInActivity.class));

@@ -1,19 +1,35 @@
 package com.sc2guide.sc2_guides_android.data.model;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
+import android.arch.persistence.room.TypeConverters;
+
 import com.sc2guide.sc2_guides_android.error.NotPossibleException;
+import com.sc2guide.sc2_guides_android.utils.Converter;
 
 import java.io.Serializable;
 import java.util.List;
 
-public class Guide implements Serializable {
+import io.reactivex.annotations.NonNull;
 
-    private String id;
+@Entity
+public class Guide implements Serializable {
+    @PrimaryKey
+    @NonNull private String id;
     private String title;
+    @ColumnInfo(name = "authorid")
     private String authorId;
+    @ColumnInfo(name = "authorname")
     private String authorName;
+    @ColumnInfo(name = "myrace")
     private String myRace;
+    @ColumnInfo(name = "oprace")
     private String opRace;
+    @ColumnInfo(name = "guidebodyitems")
+    @TypeConverters({ Converter.class })
     private List<GuideBodyItem> guideBodyItems;
+
     private String date;
 
     public Guide () {

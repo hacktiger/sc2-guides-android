@@ -112,9 +112,15 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
         setUpHideKeyBoard(); // behind map variable
         setUpButtons();
 
-        /**
-         * set up itemTouchHelper for the list of notes/desc/timing
-         */
+        setUpItemTouchHelper();
+    }
+
+    /**
+     * set up itemTouchHelper for the list of notes/desc so it can change position and stuffs
+     */
+    // TODO: delete create another of different type when saved is still the old type
+    private void setUpItemTouchHelper() {
+
         createGuideBodyItemAdapter = new CreateGuideBodyItemAdapter();
         //
         recyclerView.setHasFixedSize(false);
@@ -246,6 +252,7 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
                 Toast.makeText(getActivity(), "Error! not created", Toast.LENGTH_SHORT).show();
             }
         });
+
         updateProgressBarAndBtn(Color.GREEN, false);
     }
 
@@ -258,7 +265,7 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
 
     /**
      * @effects: handle UI change for progress bar and button colr
-     *  used in {@code: this.handleCreateGuide()}
+     *  used in {@code: this.createGuide()}
      * @param btnColor
      * @param isVisible
      */

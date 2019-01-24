@@ -24,13 +24,8 @@ public class AllGuideViewModel extends ViewModel {
     private int guideNumLimit = 7;
     private String lastItemKey = "";
 
-    public void setLastItemKey(String lastItemKey) {
-        this.lastItemKey = lastItemKey;
-    }
-
     public LiveData<List<Guide>> getMoreGuides() {
-        loadMoreGuides(); // TODO: change later
-
+        loadMoreGuides();
         return allGuides;
     }
 

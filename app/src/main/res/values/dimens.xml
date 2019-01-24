@@ -9,4 +9,10 @@
     <dimen name="text_input_margin_form">8dp</dimen>
     <dimen name="guide_detail_container_margin">10dp</dimen>
     <dimen name="body_item_padding">8dp</dimen>
+
+    <dimen name="standard_55">55dp</dimen>
+    <dimen name="standard_105">105dp</dimen>
+    <dimen name="standard_155">155dp</dimen>
+    <dimen name="standard_45">45dp</dimen>
+    <dimen name="standard_21">21dp</dimen>
 </resources>

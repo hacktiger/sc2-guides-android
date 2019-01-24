@@ -50,6 +50,8 @@
     <string name="confirm_button">Confirm</string>
     <string name="add_desc">Add Description</string>
     <string name="add_note">Add Note</string>
+    <string name="nav_my_guides">My Guides</string>
+    <string name="nav_saved_guides">Saved Guides</string>
 
     <string-array name="race_option">
         <item name="race_option_zerg">Zerg</item>

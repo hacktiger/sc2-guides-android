@@ -8,9 +8,13 @@
         android:id="@+id/drawer_profile_group"
         android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_profile"
+            android:id="@+id/nav_my_guides"
             android:icon="@drawable/ic_nav_profile"
-            android:title="@string/nav_profile"/>
+            android:title="@string/nav_my_guides"/>
+
+        <item android:id="@+id/nav_saved_guides"
+            android:icon="@drawable/ic_nav_save"
+            android:title="@string/nav_saved_guides"/>
     </group>
     <group
         android:id="@+id/drawer_main_group"
