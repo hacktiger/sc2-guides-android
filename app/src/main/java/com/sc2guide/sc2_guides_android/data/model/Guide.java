@@ -11,12 +11,11 @@ import com.sc2guide.sc2_guides_android.utils.Converter;
 import java.io.Serializable;
 import java.util.List;
 
-import io.reactivex.annotations.NonNull;
-
 @Entity
 public class Guide implements Serializable {
-    @PrimaryKey
-    @NonNull private String id;
+    @PrimaryKey(autoGenerate = true)
+    private int primaryid;
+    private String id;
     private String title;
     @ColumnInfo(name = "authorid")
     private String authorId;
@@ -34,6 +33,14 @@ public class Guide implements Serializable {
 
     public Guide () {
         //
+    }
+
+    public int getPrimaryid() {
+        return primaryid;
+    }
+
+    public void setPrimaryid(int primaryid) {
+        this.primaryid = primaryid;
     }
 
     public List<GuideBodyItem> getGuideBodyItems() {
