@@ -13,8 +13,6 @@ public class SavedGuidesViewModel extends ViewModel {
     private SavedGuidesRepository savedGuidesRepository;
     private LiveData<List<Guide>> guides;
 
-
-
     public SavedGuidesViewModel() {
     }
 

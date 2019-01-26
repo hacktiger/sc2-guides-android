@@ -37,7 +37,7 @@ import com.sc2guide.sc2_guides_android.view.auth.LogInActivity;
 import com.sc2guide.sc2_guides_android.view.common.ErrorFragment;
 import com.sc2guide.sc2_guides_android.view.guides.CreateGuideFragment;
 import com.sc2guide.sc2_guides_android.view.guides.GuideListFragment;
-import com.sc2guide.sc2_guides_android.view.users.MyGuidesFragment;
+import com.sc2guide.sc2_guides_android.view.users.ProfileFragment;
 import com.sc2guide.sc2_guides_android.view.users.SavedGuidesFragment;
 
 import java.io.IOException;
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity
     private GuideListFragment zergFragment;
     private GuideListFragment protossFragment;
     private GuideListFragment terranFragment;
-    private MyGuidesFragment myGuidesFragment;
+    private ProfileFragment profileFragment;
     private SavedGuidesFragment savedGuidesFragment;
     private CreateGuideFragment createGuideFragment;
 
@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity
                 "Protoss Guides", "Guides for the A-move bois", "Protoss", "PROTOSS_GUIDE");
         // TODO: implement my guides and saved guides
         savedGuidesFragment = SavedGuidesFragment.newInstance();
-        myGuidesFragment = MyGuidesFragment.newInstance();
+        profileFragment = ProfileFragment.newInstance();
     }
 
     // @effects: map variable to layout
@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_terran_guides) {
             navigateToFragment(terranFragment, "PROTOSS");
         } else if (id == R.id.nav_my_guides) {
-            navigateToFragment(myGuidesFragment, "MY GUIDES");
+            navigateToFragment(profileFragment, "MY GUIDES");
         } else if (id == R.id.nav_saved_guides) {
             navigateToFragment(savedGuidesFragment, "SAVED GUIDES");
         }else if (id == R.id.nav_log_out) {
@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity
             filePath = data.getData();
             try {
                 // change image view => picked img
-                ImageView imageView = findViewById(R.id.imageView2);
+                ImageView imageView = findViewById(R.id.imageView);
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
                 imageView.setImageBitmap(bitmap);
             } catch (IOException e) {

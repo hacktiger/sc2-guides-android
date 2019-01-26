@@ -47,6 +47,20 @@ public class SavedGuidesRepository {
         handleNukeTable();
     }
 
+    public void deleteGuide(Guide guide) {
+        handleDeleteGuide(guide);
+    }
+
+    private static void handleDeleteGuide(Guide guide){
+        new AsyncTask<Void, Void, Void >() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                appDatabase.guideDao().delete(guide);
+                return null;
+            }
+        };
+    }
+
     private static void handleNukeTable() {
         new AsyncTask<Void, Void, Void>(){
             @Override
@@ -65,7 +79,7 @@ public class SavedGuidesRepository {
             this.id = id;
         }
 
-        public abstract boolean receiveData(Object object);
+        public abstract void receiveData(Object object);
 
         @Override
         protected String doInBackground(String... string) {

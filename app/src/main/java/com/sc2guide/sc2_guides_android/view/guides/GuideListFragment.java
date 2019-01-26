@@ -163,11 +163,12 @@ public class GuideListFragment extends Fragment implements SwipeRefreshLayout.On
                 updateUI(guide);
             });
         } else {
-            // load view model for race view model
-            raceViewModel = ViewModelProviders.of(this).get(RaceGuideViewModel.class);
-            raceViewModel.getMoreRaceGuides(race).observe(this, guide -> {
-                updateUI(guide);
-            });
+            // TODO: implement load more for race guides later
+//            raceViewModel = ViewModelProviders.of(this).get(RaceGuideViewModel.class);
+//            raceViewModel.setRace(race);
+//            raceViewModel.getMoreGuides().observe(this, guide -> {
+//                updateUI(guide);
+//            });
         }
     }
 
@@ -176,13 +177,14 @@ public class GuideListFragment extends Fragment implements SwipeRefreshLayout.On
         if (race.equals("All") /** when all guides is selected => race = 'All' */) {
             // load view model for all guides view model
             allGuideViewModel = ViewModelProviders.of(this).get(AllGuideViewModel.class);
-            allGuideViewModel.getAllGuides(forceUpdate).observe(this, guide -> {
+            allGuideViewModel.getGuides(forceUpdate).observe(this, guide -> {
                 updateUI(guide);
             });
         } else {
             // load view model for race view model
             raceViewModel = ViewModelProviders.of(this).get(RaceGuideViewModel.class);
-            raceViewModel.getRaceGuides(race, forceUpdate).observe(this, guide -> {
+            raceViewModel.setRace(race);
+            raceViewModel.getGuides(forceUpdate).observe(this, guide -> {
                 updateUI(guide);
             });
         }

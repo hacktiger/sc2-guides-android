@@ -1,6 +1,7 @@
 package com.sc2guide.sc2_guides_android.view.guides;
 
 import android.animation.Animator;
+import android.app.AlertDialog;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,7 +10,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.sc2guide.sc2_guides_android.R;
 import com.sc2guide.sc2_guides_android.adapter.GuideDetailBodyItemAdapter;
+import com.sc2guide.sc2_guides_android.controller.FirebaseController;
 import com.sc2guide.sc2_guides_android.data.model.Guide;
 import com.sc2guide.sc2_guides_android.data.model.GuideBodyItem;
 import com.sc2guide.sc2_guides_android.repo.SavedGuidesRepository;
@@ -31,7 +32,7 @@ import java.util.Objects;
  * Use the {@link GuideDetailFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class GuideDetailFragment extends Fragment{
+public class GuideDetailFragment extends Fragment {
     private static final String FRAG_NAME = "FRAGMENT_NAME";
     private static final String GUIDE_OBJ = "GUIDE_OBJECT";
 
@@ -61,7 +62,7 @@ public class GuideDetailFragment extends Fragment{
      * this fragment using the provided parameters.
      *
      * @param fragName Parameter 1.
-     * @param guide Parameter 2.
+     * @param guide    Parameter 2.
      * @return A new instance of fragment AllDetailFragment.
      */
     public static GuideDetailFragment newInstance(String fragName, Guide guide) {
@@ -98,7 +99,7 @@ public class GuideDetailFragment extends Fragment{
         setUpAdapter();
         loadGuideDetails();
 
-        FloatingActionButton fab = ((MainActivity)getActivity()).getFab();
+        FloatingActionButton fab = ((MainActivity) getActivity()).getFab();
         fab.hide();
     }
 
@@ -117,7 +118,7 @@ public class GuideDetailFragment extends Fragment{
         fab_delete = getView().findViewById(R.id.guide_detail_fab_delete);
 
         fab.setOnClickListener(v -> {
-            if(!isFabOpen) {
+            if (!isFabOpen) {
                 showFabMenu();
             } else {
                 closeFabMenu();
@@ -130,22 +131,18 @@ public class GuideDetailFragment extends Fragment{
             // TODO: implement save db to local/ online db
             new SavedGuidesRepository.CheckGuideExistAsyncTask(guide.getId()) {
                 @Override
-                public boolean receiveData(Object object) {
+                public void receiveData(Object object) {
                     if (object.toString() == null || object.toString().equals(" ")) {
                         savedGuidesRepository.insertGuide(guide);
                         Toast.makeText(getActivity(), "Inserted", Toast.LENGTH_SHORT).show();
-
-                        return true;
                     } else {
                         Toast.makeText(getActivity(), "Already saved", Toast.LENGTH_SHORT).show();
-
-                        return false;
                     }
                 }
             }.execute();
         });
 
-        if(!((MainActivity) Objects.requireNonNull(getActivity())).getUserId().equals(guide.getAuthorId())) {
+        if (!((MainActivity) Objects.requireNonNull(getActivity())).getUserId().equals(guide.getAuthorId())) {
             fab_delete.setColorFilter(Color.GRAY);
             fab_edit.setColorFilter(Color.GRAY);
         } else {
@@ -154,11 +151,27 @@ public class GuideDetailFragment extends Fragment{
                 // !important : this is only for testing purposes
                 // clicking edit will clear all room db entries
                 savedGuidesRepository.nukeTable();
-                Log.d("ZZLL", "NUKEED");
             });
 
             fab_delete.setOnClickListener(v -> {
-                // TODO: implement
+                // prompt dialog box to delete guide first
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()); // TODO: make separate frag in the future
+                builder.setMessage(R.string.dialog_delete_mess);
+                // Add the buttons
+                builder.setPositiveButton("CONFIRM", (dialog, id) -> {
+                    // User clicked OK button
+                    savedGuidesRepository.deleteGuide(guide); // Delete the guide in offline db
+                    deleteGuideInFirebase(guide);
+                    Toast.makeText(getActivity(), "DELETED", Toast.LENGTH_SHORT).show();
+                });
+                builder.setNegativeButton("CANCEL", (dialog, id) -> {
+                    // User cancelled the dialog
+                    dialog.dismiss();
+                });
+                // Set other dialog properties
+                // Create the AlertDialog
+                AlertDialog dialog = builder.create();
+                dialog.show();
             });
         }
 
@@ -168,24 +181,32 @@ public class GuideDetailFragment extends Fragment{
         date = getView().findViewById(R.id.guide_detail_date);
     }
 
-    private void showFabMenu(){
+    private void deleteGuideInFirebase(Guide guide) {
+        FirebaseController con = new FirebaseController();
+        con.deleteGuide(guide);
+    }
+
+    private void showFabMenu() {
         if (isFabAnimating) {
             return;
         }
-        isFabOpen=true;
+        isFabOpen = true;
         fab.animate().rotationBy(45).setListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
                 isFabAnimating = true;
             }
+
             @Override
             public void onAnimationEnd(Animator animation) {
                 isFabAnimating = false;
             }
+
             @Override
             public void onAnimationCancel(Animator animation) {
                 isFabAnimating = false;
             }
+
             @Override
             public void onAnimationRepeat(Animator animation) {
             }
@@ -197,24 +218,27 @@ public class GuideDetailFragment extends Fragment{
 
     }
 
-    private void closeFabMenu(){
-        if(isFabAnimating) {
+    private void closeFabMenu() {
+        if (isFabAnimating) {
             return;
         }
-        isFabOpen=false;
+        isFabOpen = false;
         fab.animate().rotationBy(-45).setListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
                 isFabAnimating = true;
             }
+
             @Override
             public void onAnimationEnd(Animator animation) {
                 isFabAnimating = false;
             }
+
             @Override
             public void onAnimationCancel(Animator animation) {
                 isFabAnimating = false;
             }
+
             @Override
             public void onAnimationRepeat(Animator animation) {
             }
@@ -225,7 +249,6 @@ public class GuideDetailFragment extends Fragment{
         // may need to hide it too
 
     }
-
 
 
     private void loadGuideDetails() {

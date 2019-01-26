@@ -64,6 +64,11 @@ public class FirebaseController {
         ref.setValue(guide).addOnCompleteListener(onCompleteListener);
     }
 
+    public void deleteGuide(Guide guide) {
+        guideDBRef = mFirebaseDbService.getReference(guideRefName);
+        guideDBRef.child(guide.getId()).removeValue();
+    }
+
     public void insertUser (User user, OnCompleteListener<Void> onCompleteListener) {
         userDBRef = mFirebaseDbService.getReference(userRefName);
         userDBRef.push().setValue(user).addOnCompleteListener(onCompleteListener);
@@ -97,4 +102,5 @@ public class FirebaseController {
                 .addOnProgressListener(onProgressListener)
                 .addOnFailureListener(onFailureListener);
     }
+
 }

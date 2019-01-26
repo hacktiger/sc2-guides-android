@@ -18,22 +18,23 @@ import com.sc2guide.sc2_guides_android.adapter.GuideAdapter;
 import com.sc2guide.sc2_guides_android.data.model.Guide;
 import com.sc2guide.sc2_guides_android.view.MainActivity;
 import com.sc2guide.sc2_guides_android.view.guides.GuideDetailFragment;
-import com.sc2guide.sc2_guides_android.viewmodel.SavedGuidesViewModel;
+import com.sc2guide.sc2_guides_android.viewmodel.ProfileViewModel;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link SavedGuidesFragment#newInstance} factory method to
+ * Use the {@link ProfileFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SavedGuidesFragment extends Fragment {
+public class ProfileFragment extends Fragment {
 
-    private SavedGuidesViewModel mViewModel;
+    private ProfileViewModel mViewModel;
 
     private GuideAdapter adapter;
 
-    public SavedGuidesFragment() {
+    public ProfileFragment() {
         // Required empty public constructor
     }
 
@@ -41,13 +42,13 @@ public class SavedGuidesFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @return A new instance of fragment SavedGuidesFragment.
+     * @return A new instance of fragment ProfileFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static SavedGuidesFragment newInstance() {
-        SavedGuidesFragment fragment = new SavedGuidesFragment();
+    public static ProfileFragment newInstance() {
+        ProfileFragment fragment = new ProfileFragment();
         Bundle args = new Bundle();
-
+        //
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,23 +57,40 @@ public class SavedGuidesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-
+            //
         }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_saved_guides, container, false);
+        return inflater.inflate(R.layout.fragment_profile, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        loadSavedGuides();
+        loadMyGuides();
         setUpAdapter();
         setUpRecyclerView();
+    }
+
+    private void loadMyGuides() {
+        ((MainActivity) Objects.requireNonNull(getActivity())).getProgressBar().setVisibility(View.VISIBLE);
+
+        mViewModel = ViewModelProviders.of(this).get(ProfileViewModel.class);
+        mViewModel.setAuthorId(((MainActivity)getActivity()).getUserId());
+        mViewModel.getGuides(false).observe(this, guides-> {
+            // update UI
+            updateRecycler(guides);
+        });
+    }
+
+    private void updateRecycler(List<Guide> guides) {
+        adapter.setGuides(guides);
+        ((MainActivity) Objects.requireNonNull(getActivity())).getProgressBar().setVisibility(View.INVISIBLE);
+
     }
 
     private void setUpAdapter() {
@@ -96,23 +114,10 @@ public class SavedGuidesFragment extends Fragment {
     }
 
     private void setUpRecyclerView() {
-        RecyclerView recyclerView = getView().findViewById(R.id.saved_guides_recycler);
+        RecyclerView recyclerView = getView().findViewById(R.id.profile_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);   // set guide adapter to view
     }
 
-
-    private void loadSavedGuides() {
-        mViewModel = ViewModelProviders.of(this).get(SavedGuidesViewModel.class);
-        mViewModel.getGuides(getContext()).observe(this, guides-> {
-            // update UI
-            updateRecycler(guides);
-        });
-    }
-
-    private void updateRecycler(List<Guide> guides) {
-        adapter.setGuides(guides);
-        // TODO: add progress bar or smt
-    }
 }
