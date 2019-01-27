@@ -32,14 +32,15 @@ public class FirebaseController {
     private DatabaseReference guideDBRef;
     private DatabaseReference userDBRef;
 
-    public FirebaseController () {
+    public FirebaseController() {
         mFirebaseAuthService = new FirebaseAuthService();
         mFirebaseDbService = new FirebaseDatabaseService();
         mFirebaseStorageService = new FirebaseStorageService();
     }
+
     // Authentication related methods
     public void createUserWithEmailAndPassword(String email, String password,
-                                               OnCompleteListener<AuthResult> onCompleteListener, OnFailureListener onFailureListener){
+                                               OnCompleteListener<AuthResult> onCompleteListener, OnFailureListener onFailureListener) {
         mFirebaseAuthService.getFirebase().createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(onCompleteListener)
                 .addOnFailureListener(onFailureListener);
@@ -56,20 +57,23 @@ public class FirebaseController {
         return mFirebaseAuthService.currentUser();
     }
 
-    public void insertGuide (Guide guide, OnCompleteListener<Void> onCompleteListener) {
+    public void insertGuide(Guide guide, OnCompleteListener<Void> onCompleteListener, OnFailureListener onFailureListener) {
         guideDBRef = mFirebaseDbService.getReference(guideRefName);
         DatabaseReference ref = guideDBRef.push();
         String key = ref.getKey();
         guide.setId(key);
-        ref.setValue(guide).addOnCompleteListener(onCompleteListener);
+        ref.setValue(guide).addOnCompleteListener(onCompleteListener).addOnFailureListener(onFailureListener);
+
     }
 
-    public void deleteGuide(Guide guide) {
+    public void deleteGuide(Guide guide, OnCompleteListener onCompleteListener, OnFailureListener onFailureListener) {
         guideDBRef = mFirebaseDbService.getReference(guideRefName);
-        guideDBRef.child(guide.getId()).removeValue();
+        guideDBRef.child(guide.getId()).removeValue()
+                .addOnCompleteListener(onCompleteListener)
+                .addOnFailureListener(onFailureListener);
     }
 
-    public void insertUser (User user, OnCompleteListener<Void> onCompleteListener) {
+    public void insertUser(User user, OnCompleteListener<Void> onCompleteListener) {
         userDBRef = mFirebaseDbService.getReference(userRefName);
         userDBRef.push().setValue(user).addOnCompleteListener(onCompleteListener);
     }
@@ -79,20 +83,20 @@ public class FirebaseController {
     }
 
     /**
-     * @effects: handles upload user profile picture to firebase storage
-     *              create profileImg storage reference
-     *              delete old profile pic if any
-     *              upload new profile pic
      * @param filePath
      * @param userId
      * @param onProgressListener
      * @param onFailureListener
      * @param onSuccessListener
+     * @effects: handles upload user profile picture to firebase storage
+     * create profileImg storage reference
+     * delete old profile pic if any
+     * upload new profile pic
      */
-    public void insertProfilePic (Uri filePath, String userId,
-                                  OnProgressListener<UploadTask.TaskSnapshot> onProgressListener, OnFailureListener onFailureListener,
-                                  OnSuccessListener<UploadTask.TaskSnapshot> onSuccessListener) {
-        profileImgStorageRef = mFirebaseStorageService.getStorageReference().child("images/"+ userId);
+    public void insertProfilePic(Uri filePath, String userId,
+                                 OnProgressListener<UploadTask.TaskSnapshot> onProgressListener, OnFailureListener onFailureListener,
+                                 OnSuccessListener<UploadTask.TaskSnapshot> onSuccessListener) {
+        profileImgStorageRef = mFirebaseStorageService.getStorageReference().child("images/" + userId);
         // Delete old image if there is
         profileImgStorageRef.delete()
                 .addOnFailureListener(onFailureListener);

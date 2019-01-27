@@ -22,6 +22,7 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.sc2guide.sc2_guides_android.R;
 import com.sc2guide.sc2_guides_android.adapter.CreateGuideBodyItemAdapter;
 import com.sc2guide.sc2_guides_android.adapter.helper.SimpleItemTouchHelperCallback;
@@ -237,8 +238,8 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
             return;
         }
         // insert the guide to firebase database
-        mFirebaseController.insertGuide(guide, task -> {
-            if(task.isSuccessful()){
+        mFirebaseController.insertGuide(guide, task -> { // OnCompleteListener
+            if (task.isSuccessful()) {
                 Toast.makeText(getActivity(), "Guide created", Toast.LENGTH_SHORT).show();
                 try {
                     GuideListFragment frag = new GuideListFragment();
@@ -250,6 +251,12 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
             } else {
                 updateProgressBarAndBtn(Color.GREEN, false);
                 Toast.makeText(getActivity(), "Error! not created", Toast.LENGTH_SHORT).show();
+            }
+        }, new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                updateProgressBarAndBtn(Color.GREEN, false);
+                Toast.makeText(getActivity(), "Error :" + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 

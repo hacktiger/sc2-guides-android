@@ -21,6 +21,15 @@ public class GuideAdapter extends RecyclerView.Adapter<GuideAdapter.GuideHolder>
 
     private List<Guide> guideList = new ArrayList<>();
 
+    public int getItemPosition(Guide guide) {
+        for(int i = 0 ; i < guideList.size(); i ++) {
+            if (guideList.get(i).getId() == guide.getId()) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public GuideAdapter(OnItemClickListener listener,
                         OnItemLongClickListener longListener
                         ){
@@ -90,6 +99,12 @@ public class GuideAdapter extends RecyclerView.Adapter<GuideAdapter.GuideHolder>
     public void setGuides(List<Guide> guides) {
         this.guideList = guides;
         notifyDataSetChanged();
+    }
+
+    public void deleteGuide(Guide guide) {
+        int pos = getItemPosition(guide);
+        this.guideList.remove(pos);
+        notifyItemRemoved(pos);
     }
 
     class GuideHolder extends  RecyclerView.ViewHolder {

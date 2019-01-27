@@ -12,7 +12,7 @@ import java.util.List;
 public class Converter {
     @TypeConverter
     public static List<GuideBodyItem> fromString(String value) {
-        Type listType = new TypeToken<List<String>>() {}.getType();
+        Type listType = new TypeToken<List<GuideBodyItem>>() {}.getType();
         return new Gson().fromJson(value, listType);
     }
 

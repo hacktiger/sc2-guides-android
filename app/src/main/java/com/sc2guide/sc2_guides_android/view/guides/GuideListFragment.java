@@ -44,12 +44,14 @@ public class GuideListFragment extends Fragment implements SwipeRefreshLayout.On
     private String title;
     private String subtitle;
     private String race;
-    private boolean isLoading = true;
+    public boolean isLoading = true;
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RaceGuideViewModel raceViewModel;
     private AllGuideViewModel allGuideViewModel;
     private GuideAdapter adapter;
+
+    private int guideCount = 0;
 
 
     //TODO: !important : dont load all..
@@ -132,7 +134,7 @@ public class GuideListFragment extends Fragment implements SwipeRefreshLayout.On
         mSwipeRefreshLayout.post(() -> { // load first time
             mSwipeRefreshLayout.setRefreshing(true);
             // Fetching data from server
-            loadGuides(false);
+            loadGuides(false); // TODO: may need to cache data so the data remains when the user in on another fragment
             isLoading = false;
             mSwipeRefreshLayout.setRefreshing(false);
 
@@ -150,12 +152,14 @@ public class GuideListFragment extends Fragment implements SwipeRefreshLayout.On
         mSwipeRefreshLayout.setRefreshing(true); // display refreshing spinning icon
         isLoading = true;
         // Fetching data from firebase server
-        loadGuides(true); // TODO: change back to loadGuide() later
+        loadGuides(true);
         mSwipeRefreshLayout.setRefreshing(false);
         isLoading = false;
     }
 
     private void loadMoreGuides() {
+        isLoading = true;
+        Log.d("ZZLL", "boolean when set" + isLoading);
         // TODO: does not work the first time/ only after the second
         if (race.equals("All") /** when all guides is selected => race = 'All' */) {
             allGuideViewModel = ViewModelProviders.of(this).get(AllGuideViewModel.class);
@@ -199,15 +203,17 @@ public class GuideListFragment extends Fragment implements SwipeRefreshLayout.On
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                // TODO: load more is a little bit laggy
-                int itemCount = adapter.getItemCount();
-                int visibleThreshold = 100;
-                int lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
-                if (itemCount <= (lastVisibleItem + visibleThreshold) && !isLoading) {
-                    ((MainActivity)getActivity()).getProgressBar().setVisibility(View.VISIBLE);
-                    loadMoreGuides();
-                    ((MainActivity)getActivity()).getProgressBar().setVisibility(View.INVISIBLE);
+                if (allGuideViewModel.isComplete()) {
+                    super.onScrolled(recyclerView, dx, dy);
+                    int itemCount = adapter.getItemCount();
+                    int visibleThreshold = 100;
+                    int lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
+
+                    if (itemCount <= (lastVisibleItem + visibleThreshold)) {
+                        ((MainActivity)getActivity()).getProgressBar().setVisibility(View.VISIBLE);
+                        loadMoreGuides();
+                        // TODO: set isLoading = false somewhere
+                    }
                 }
             }
         });
@@ -237,7 +243,6 @@ public class GuideListFragment extends Fragment implements SwipeRefreshLayout.On
         });
     }
 
-
     @Override
     public void onResume() {
         super.onResume();
@@ -250,5 +255,9 @@ public class GuideListFragment extends Fragment implements SwipeRefreshLayout.On
         super.onStop();
         ((MainActivity) getActivity()).getFab().hide();
         ((MainActivity) getActivity()).getProgressBar().setVisibility(View.INVISIBLE);
+    }
+
+    public void deleteGuide(Guide guide) {
+        adapter.deleteGuide(guide);
     }
 }

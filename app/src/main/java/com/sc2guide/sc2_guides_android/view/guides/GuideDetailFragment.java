@@ -49,9 +49,11 @@ public class GuideDetailFragment extends Fragment {
     private TextView date;
 
     private GuideDetailBodyItemAdapter guideDetailBodyItemAdapter;
+    private SavedGuidesRepository savedGuidesRepository;
 
     private String fragName;
     private Guide guide;
+
 
     public GuideDetailFragment() {
         // Required empty public constructor
@@ -124,7 +126,7 @@ public class GuideDetailFragment extends Fragment {
                 closeFabMenu();
             }
         });
-        SavedGuidesRepository savedGuidesRepository = new SavedGuidesRepository(getContext()); // TODO:migrate
+        savedGuidesRepository = new SavedGuidesRepository(getContext()); // TODO:migrate
 
         // set on click after animation finishes
         fab_save.setOnClickListener(v -> {
@@ -160,14 +162,13 @@ public class GuideDetailFragment extends Fragment {
                 // Add the buttons
                 builder.setPositiveButton("CONFIRM", (dialog, id) -> {
                     // User clicked OK button
-                    savedGuidesRepository.deleteGuide(guide); // Delete the guide in offline db
-                    deleteGuideInFirebase(guide);
-                    Toast.makeText(getActivity(), "DELETED", Toast.LENGTH_SHORT).show();
+                    onDeleteConfirm();
                 });
                 builder.setNegativeButton("CANCEL", (dialog, id) -> {
                     // User cancelled the dialog
                     dialog.dismiss();
                 });
+
                 // Set other dialog properties
                 // Create the AlertDialog
                 AlertDialog dialog = builder.create();
@@ -181,9 +182,18 @@ public class GuideDetailFragment extends Fragment {
         date = getView().findViewById(R.id.guide_detail_date);
     }
 
-    private void deleteGuideInFirebase(Guide guide) {
+    private void onDeleteConfirm() {
         FirebaseController con = new FirebaseController();
-        con.deleteGuide(guide);
+        con.deleteGuide(guide, o -> {
+            savedGuidesRepository.deleteGuide(guide); // Delete the guide in offline db
+            if (getFragmentManager() != null) {
+                getFragmentManager().popBackStack();
+            }
+            Toast.makeText(getActivity(), "Guide deleted" , Toast.LENGTH_SHORT).show();
+        }, e -> {
+            Toast.makeText(getActivity(), "Cant delete: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        });
     }
 
     private void showFabMenu() {
