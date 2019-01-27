@@ -159,7 +159,6 @@ public class GuideListFragment extends Fragment implements SwipeRefreshLayout.On
 
     private void loadMoreGuides() {
         isLoading = true;
-        Log.d("ZZLL", "boolean when set" + isLoading);
         // TODO: does not work the first time/ only after the second
         if (race.equals("All") /** when all guides is selected => race = 'All' */) {
             allGuideViewModel = ViewModelProviders.of(this).get(AllGuideViewModel.class);
@@ -167,6 +166,7 @@ public class GuideListFragment extends Fragment implements SwipeRefreshLayout.On
                 updateUI(guide);
             });
         } else {
+            ((MainActivity)getActivity()).getProgressBar().setVisibility(View.INVISIBLE);
             // TODO: implement load more for race guides later
 //            raceViewModel = ViewModelProviders.of(this).get(RaceGuideViewModel.class);
 //            raceViewModel.setRace(race);
@@ -203,18 +203,34 @@ public class GuideListFragment extends Fragment implements SwipeRefreshLayout.On
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                if (allGuideViewModel.isComplete()) {
-                    super.onScrolled(recyclerView, dx, dy);
-                    int itemCount = adapter.getItemCount();
-                    int visibleThreshold = 100;
-                    int lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
+                super.onScrolled(recyclerView, dx, dy);
+                if (allGuideViewModel == null) {
+                    if (raceViewModel.isComplete()) {
+                        int itemCount = adapter.getItemCount();
+                        int visibleThreshold = 100;
+                        int lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
 
-                    if (itemCount <= (lastVisibleItem + visibleThreshold)) {
-                        ((MainActivity)getActivity()).getProgressBar().setVisibility(View.VISIBLE);
-                        loadMoreGuides();
-                        // TODO: set isLoading = false somewhere
+                        if (itemCount <= (lastVisibleItem + visibleThreshold)) {
+                            ((MainActivity)getActivity()).getProgressBar().setVisibility(View.VISIBLE);
+                            loadMoreGuides();
+                            // TODO: set isLoading = false somewhere
+                        }
+                    }
+                } else {
+                    if (allGuideViewModel.isComplete()) {
+                        int itemCount = adapter.getItemCount();
+                        int visibleThreshold = 100;
+                        int lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
+
+                        if (itemCount <= (lastVisibleItem + visibleThreshold)) {
+                            ((MainActivity)getActivity()).getProgressBar().setVisibility(View.VISIBLE);
+                            loadMoreGuides();
+                            // TODO: set isLoading = false somewhere
+                        }
                     }
                 }
+
+
             }
         });
     }
@@ -257,7 +273,4 @@ public class GuideListFragment extends Fragment implements SwipeRefreshLayout.On
         ((MainActivity) getActivity()).getProgressBar().setVisibility(View.INVISIBLE);
     }
 
-    public void deleteGuide(Guide guide) {
-        adapter.deleteGuide(guide);
-    }
 }

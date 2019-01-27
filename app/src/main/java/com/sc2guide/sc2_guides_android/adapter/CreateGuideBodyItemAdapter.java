@@ -57,7 +57,11 @@ public class CreateGuideBodyItemAdapter extends RecyclerView.Adapter<CreateGuide
         itemViewHolder.editBtn.setOnClickListener(v -> {
             itemViewHolder.switcher.showNext();
             itemViewHolder.editText.setText(userInput);
-            itemViewHolder.editBtn.setText("CONFIRM");
+            if (itemViewHolder.editBtn.getText().equals("EDIT")){
+                itemViewHolder.editBtn.setText("CONFIRM");
+            } else {
+                itemViewHolder.editBtn.setText("EDIT");
+            }
         });
     }
 

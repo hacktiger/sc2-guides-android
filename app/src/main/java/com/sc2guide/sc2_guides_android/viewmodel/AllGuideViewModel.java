@@ -1,7 +1,6 @@
 package com.sc2guide.sc2_guides_android.viewmodel;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -16,10 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AllGuideViewModel extends GetGuideVMInterface {
-    private boolean isComplete;
     @Override
     public void loadGuides() {
-        isComplete = false;
+        setComplete(false);
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference(getRef());
         ref.orderByKey()
                 .limitToLast(getGuideNumLimit())
@@ -37,7 +35,7 @@ public class AllGuideViewModel extends GetGuideVMInterface {
                             }
                             // reverse the temp list
                             handleLoadGuideLogic(tempListGuide);
-                            isComplete = true;
+                            setComplete(true);
 
                         }
                     }
@@ -48,15 +46,10 @@ public class AllGuideViewModel extends GetGuideVMInterface {
                 });
     }
 
-    public boolean isComplete() {
-        return isComplete;
-    }
 
     @Override
     public void loadMoreGuides() {
-        isComplete = false;
-        Log.d("ZZLL", "change is complete 11  " + isComplete);
-
+        setComplete(false);
         FirebaseDatabase.getInstance()
                 .getReference(getRef())
                 .orderByKey()
@@ -67,22 +60,17 @@ public class AllGuideViewModel extends GetGuideVMInterface {
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if (dataSnapshot.exists()) {
                             List<Guide> tempListGuide = new ArrayList<>();
-                            Log.d("ZZLL", "---------------------------------------------------");
                             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                                 try {
-                                    Log.d("ZZLL", snapshot.child("title").getValue().toString());
                                     tempListGuide.add(retrieveDataToModel(snapshot));
                                 } catch (NotPossibleException e) {
                                     e.printStackTrace();
                                 }
                             }
                             handleLoadMoreLogic(tempListGuide);
-                            isComplete = true;
-                            Log.d("ZZLL", "change is complete 2  " + isComplete);
-
+                            setComplete(true);
                         }
                     }
-
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
                         databaseError.getCode();

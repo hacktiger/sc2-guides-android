@@ -45,6 +45,7 @@ import java.util.Objects;
  */
 // TODO: !important : update new features:
 // TODO: clicking to create guide too fast before the guide list load leads to the progress bar not cancelled
+
 /**
  * 1. add timing (with time/ drone count)/ note(* yellow box)/ normal description (normal text)
  * 2. drag to change position
@@ -58,6 +59,7 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
     private Button guideCreateBtn;
     private Button addNoteBtn;
     private Button addDescBtn;
+    private Button addTimingBtn;
     private RecyclerView recyclerView;
     // helper
     private ItemTouchHelper mItemTouchHelper;
@@ -69,6 +71,13 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
     private FirebaseController mFirebaseController;
     //
     private User user;
+    //
+    private EditText mEditTxt;
+    private Button mConfirmBtn;
+    private View card;
+
+    private LinearLayout mLinearLayout;
+
     public CreateGuideFragment() {
         // Required empty public constructor
     }
@@ -121,7 +130,6 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
      */
     // TODO: delete create another of different type when saved is still the old type
     private void setUpItemTouchHelper() {
-
         createGuideBodyItemAdapter = new CreateGuideBodyItemAdapter();
         //
         recyclerView.setHasFixedSize(false);
@@ -136,82 +144,55 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
     private void setUpButtons() {
         // set up the buttons
         addNoteBtn.setOnClickListener(v -> {
-            addNote();
+            createInput("Note detail here...", getResources().getString(R.string.guide_body_item_type_note));
         });
         addDescBtn.setOnClickListener(v -> {
-            addDesc();
+            createInput("Desc detail here...", getResources().getString(R.string.guide_body_item_type_desc));
+        });
+        addTimingBtn.setOnClickListener(v -> {
+            createInput("Timing here...", getResources().getString(R.string.guide_body_item_type_desc)); // TODO: change to timing specific later
         });
         guideCreateBtn.setOnClickListener(v -> {
             createGuide();
         });
     }
 
-    private void addNote() {
-        LinearLayout mLayout = Objects.requireNonNull(getView()).findViewById(R.id.create_guide_add_note_layout);
-        // TODO: ADD WITH RECYCLER ????
-        LinearLayout linearLayout = new LinearLayout(getActivity());
-        linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-        linearLayout.setWeightSum(100f);
-        EditText mEditTxt = new EditText(getActivity());
-        mEditTxt.setHint("Add Note here...");
-        mEditTxt.setOnFocusChangeListener((v, hasFocus) -> {
+    private void createInput(String hint, String type) {
+        // TODO: !smt wrong : unchecked or unsafe operations used here
+        LinearLayout.LayoutParams editTxtParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        LinearLayout.LayoutParams btnParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        //
+        LinearLayout containerLayout = new LinearLayout(getActivity());
+        containerLayout.setOrientation(LinearLayout.VERTICAL);
+        containerLayout.setLayoutParams(btnParam);
+        //
+        EditText editTxt = new EditText(getActivity());
+        editTxt.setHint(hint);
+        editTxt.setLayoutParams(editTxtParam);
+        editTxt.setOnFocusChangeListener((v, hasFocus) -> {
             if(!hasFocus) { hideKeyBoard(); }
         });
-        mEditTxt.setSingleLine(false);
-        mEditTxt.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
-        Button confirm = new Button(getActivity());
-        confirm.setText(getResources().getString(R.string.confirm_button));
-        confirm.setOnClickListener(v -> {
-            String body = mEditTxt.getText().toString();
-
-            if (body.length() == 0) {
+        editTxt.setSingleLine(false);
+        editTxt.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
+        //
+        Button cfBtn = new Button(getActivity());
+        cfBtn.setText(getResources().getString(R.string.confirm_button));
+        cfBtn.setLayoutParams(btnParam);
+        cfBtn.setOnClickListener(v -> {
+            String body = editTxt.getText().toString();
+            if(body.length() == 0) {
                 Toast.makeText(getActivity(), "Fill the void pls :( ", Toast.LENGTH_SHORT).show();
                 return;
             }
-            String type = getResources().getString(R.string.guide_body_item_type_note);
             createGuideBodyItemAdapter.addItem(type, body);
-
-            mLayout.removeView(linearLayout);
+            mLinearLayout.removeView(containerLayout);
         });
-        linearLayout.addView(mEditTxt);
-        linearLayout.addView(confirm);
-        // add the linear layout
-        mLayout.addView(linearLayout);
+        //
+        containerLayout.addView(editTxt);
+        containerLayout.addView(cfBtn);
+        //
+        mLinearLayout.addView(containerLayout);
     }
-
-    private void addDesc() {
-        // TODO: change to the same as note
-        LinearLayout mLayout = Objects.requireNonNull(getView()).findViewById(R.id.create_guide_add_note_layout);
-        LinearLayout linearLayout = new LinearLayout(getActivity());
-        linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-        linearLayout.setWeightSum(100f);
-        EditText mEditTxt = new EditText(getActivity());
-        mEditTxt.setHint("Add description here...");
-        mEditTxt.setOnFocusChangeListener((v, hasFocus) -> {
-            if(!hasFocus) { hideKeyBoard(); }
-        });
-        mEditTxt.setSingleLine(false);
-        mEditTxt.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
-        Button confirm = new Button(getActivity());
-        confirm.setText("Confirm");
-        confirm.setOnClickListener(v -> {
-            String body = mEditTxt.getText().toString();
-
-            if (body.length() == 0) {
-                Toast.makeText(getActivity(), "Fill the void pls :( ", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            String type = getResources().getString(R.string.guide_body_item_type_desc);
-            createGuideBodyItemAdapter.addItem(type, body);
-            //
-            mLayout.removeView(linearLayout);
-        });
-        linearLayout.addView(mEditTxt);
-        linearLayout.addView(confirm);
-        // add the linear layout
-        mLayout.addView(linearLayout);
-    }
-
     /**
      * @effects: main method to handle adding the guide to firebase database
      */
@@ -228,7 +209,7 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
         String strCurrentDate = getCurrentDate();
         //
         try {
-            guide = new Guide("0", guideTitle.getText().toString(), myRace, opRace ,
+            guide = new Guide("0", guideTitle.getText().toString(), myRace, opRace,
                     uid, userEmail, createGuideBodyItemAdapter.getItems(), strCurrentDate);
         } catch (Exception e) {
             e.printStackTrace();
@@ -271,12 +252,12 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
     }
 
     /**
-     * @effects: handle UI change for progress bar and button colr
-     *  used in {@code: this.createGuide()}
      * @param btnColor
      * @param isVisible
+     * @effects: handle UI change for progress bar and button colr
+     * used in {@code: this.createGuide()}
      */
-    private void updateProgressBarAndBtn (int btnColor, boolean isVisible) {
+    private void updateProgressBarAndBtn(int btnColor, boolean isVisible) {
         guideCreateBtn.setBackgroundColor(btnColor);
         if (isVisible) {
             progressBar.setVisibility(View.VISIBLE);
@@ -288,25 +269,26 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
 
     /**
      * @effects: map variables to layout components
-     *  used in {@code: this.onViewCreated}
+     * used in {@code: this.onViewCreated}
      */
-    private void setUpMapVariable () {
-        //
+    private void setUpMapVariable() {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(0,10,0,10);
+        layoutParams.setMargins(0, 10, 0, 10);
         //
         guideTitle = Objects.requireNonNull(getView()).findViewById(R.id.create_guide_title);
         recyclerView = getView().findViewById(R.id.create_guides_recyler_view);
         addNoteBtn = getView().findViewById(R.id.create_guide_add_note);
         addDescBtn = getView().findViewById(R.id.create_guide_add_desc);
+        addTimingBtn = getView().findViewById(R.id.create_guide_add_timing);
         guideCreateBtn = getView().findViewById(R.id.create_guide_button);
         progressBar = getView().findViewById(R.id.create_guide_progress);
-
+        //
+        mLinearLayout = Objects.requireNonNull(getView()).findViewById(R.id.create_guide_add_note_layout);
     }
 
     /**
      * @effects: set up options for the 2 spinners
-     *  used in {@code: this.onViewCreated}
+     * used in {@code: this.onViewCreated}
      */
     private void setUpSpinner() {
         // spinner for my race
@@ -330,7 +312,7 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
      * @effects: hide key board on user press outside of the text input fields
      */
     private void setUpHideKeyBoard() {
-        guideTitle.setOnFocusChangeListener(new View.OnFocusChangeListener(){
+        guideTitle.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) hideKeyBoard();
@@ -359,18 +341,18 @@ public class CreateGuideFragment extends Fragment implements AdapterView.OnItemS
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if(parent.getId() == spinner.getId()) {
+        if (parent.getId() == spinner.getId()) {
             myRace = parent.getItemAtPosition(position).toString();
             Toast.makeText(getActivity(), "PICKED :" + myRace, Toast.LENGTH_SHORT).show();
         }
-        if(parent.getId() == spinner_op.getId()) {
+        if (parent.getId() == spinner_op.getId()) {
             opRace = parent.getItemAtPosition(position).toString();
             Toast.makeText(getActivity(), "PICKED :" + opRace, Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
-    public void onNothingSelected(AdapterView<?> parent){
+    public void onNothingSelected(AdapterView<?> parent) {
         Toast.makeText(getActivity(), "Please choose an option", Toast.LENGTH_SHORT).show();
     }
 }

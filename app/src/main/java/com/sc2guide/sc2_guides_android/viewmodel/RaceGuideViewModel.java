@@ -14,8 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RaceGuideViewModel extends GetGuideVMInterface {
+
     @Override
     public void loadGuides() {
+        setComplete(false);
         // Do async operation to fetch guides
         FirebaseDatabase.getInstance()
                 .getReference(getRef())
@@ -35,9 +37,10 @@ public class RaceGuideViewModel extends GetGuideVMInterface {
                                 }
                             }
                             handleLoadGuideLogic(tempListGuide);
+                            setComplete(true);
+
                         }
                     }
-
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
                         databaseError.getCode();
@@ -47,6 +50,8 @@ public class RaceGuideViewModel extends GetGuideVMInterface {
 
     @Override
     public void loadMoreGuides() {
+        setComplete(false);
+
         FirebaseDatabase.getInstance()
                 .getReference(getRef())
                 .orderByChild("myRace")
@@ -66,6 +71,8 @@ public class RaceGuideViewModel extends GetGuideVMInterface {
                                 }
                             }
                             handleLoadMoreLogic(tempListGuide);
+                            setComplete(true);
+
                         }
                     }
 
