@@ -131,17 +131,20 @@ public class GuideDetailFragment extends Fragment {
         // set on click after animation finishes
         fab_save.setOnClickListener(v -> {
             // TODO: implement save db to local/ online db
-            new SavedGuidesRepository.CheckGuideExistAsyncTask(guide.getId()) {
+            SavedGuidesRepository.CheckGuideExistAsyncTask task = new SavedGuidesRepository.CheckGuideExistAsyncTask(new SavedGuidesRepository.CheckGuideExistAsyncTask.CallBackReceiver2() {
+
                 @Override
-                public void receiveData(Object object) {
-                    if (object.toString() == null || object.toString().equals(" ")) {
-                        savedGuidesRepository.insertGuide(guide);
-                        Toast.makeText(getActivity(), "Inserted", Toast.LENGTH_SHORT).show();
+                public void receiveData(String s) {
+                    if(s == null) {
+                        Toast.makeText(getActivity(), "not saved", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(getActivity(), "Already saved", Toast.LENGTH_SHORT).show();
                     }
                 }
-            }.execute();
+            });
+            task.execute(guide.getId());
+
+
         });
 
         if (!((MainActivity) Objects.requireNonNull(getActivity())).getUserId().equals(guide.getAuthorId())) {

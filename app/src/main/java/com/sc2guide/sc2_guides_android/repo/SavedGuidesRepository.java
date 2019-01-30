@@ -7,7 +7,6 @@ import android.os.AsyncTask;
 
 import com.sc2guide.sc2_guides_android.data.model.Guide;
 import com.sc2guide.sc2_guides_android.room.database.AppDatabase;
-import com.sc2guide.sc2_guides_android.utils.CallBackReceiver;
 
 import java.util.List;
 
@@ -71,28 +70,29 @@ public class SavedGuidesRepository {
         }.execute();
     }
 
-    public abstract static class CheckGuideExistAsyncTask extends AsyncTask<String, Void, String> implements CallBackReceiver {
-        private String id;
-
-        public CheckGuideExistAsyncTask(String id) {
-            super();
-            this.id = id;
+    public  static class CheckGuideExistAsyncTask extends AsyncTask<String, Void, String>  {
+        public interface CallBackReceiver2 {
+            void receiveData(String s);
         }
 
-        public abstract void receiveData(Object object);
+        private CallBackReceiver2 delegate = null;
+
+        public CheckGuideExistAsyncTask(CallBackReceiver2 callBackReceiver) {
+            super();
+            this.delegate = callBackReceiver;
+        }
 
         @Override
         protected String doInBackground(String... string) {
-            return appDatabase.guideDao().getGuideTitle(id);
-
+            return appDatabase.guideDao().getGuideTitle(string[0]);
         }
 
         @Override
         protected void onPostExecute(String s) {
             if (s!=null) {
-                receiveData(s);
+                delegate.receiveData(s);
             } else {
-                receiveData(" ");
+                delegate.receiveData(null);
             }
         }
 
