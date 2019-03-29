@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_saved_guides) {
             navigateToFragment(savedGuidesFragment, "SAVED GUIDES");
         } else if (id == R.id.nav_log_out) {
-            // Sign user out of Firebase and navigate back to login activity
+            // Sign user out of Firebase and navigate back to login activitys ds ds d s
             mAuth.signOut();
             startActivity(new Intent(MainActivity.this, LogInActivity.class));
             finish();
