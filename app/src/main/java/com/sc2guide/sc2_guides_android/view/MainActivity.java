@@ -43,8 +43,7 @@ import com.sc2guide.sc2_guides_android.view.users.SavedGuidesFragment;
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener
-        {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     private TextView userName;
     private TextView userEmail;
@@ -83,9 +82,9 @@ public class MainActivity extends AppCompatActivity
         setUpMapVariable(); // map variable to view comps
         setUpToolBar();// set up toolbar
         ab = getSupportActionBar(); // must be below toolbar lel
-        setUpFab ();
-        setUpDrawer ();
-        setUpDrawerInfo ();  // set up current user info in nav header
+        setUpFab();
+        setUpDrawer();
+        setUpDrawerInfo();  // set up current user info in nav header
         setUpNavigationView();
         setUpNavigation();
 
@@ -93,9 +92,11 @@ public class MainActivity extends AppCompatActivity
         initFirstFrag(savedInstanceState);
     }
 
-    private  void initFirstFrag (Bundle savedInstanceState) {
+    private void initFirstFrag(Bundle savedInstanceState) {
         if (findViewById(R.id.fragment_container) != null) {
-            if (savedInstanceState != null) { return; }
+            if (savedInstanceState != null) {
+                return;
+            }
             // set up allFragment as the first fragment to appear on activity
             transaction = fragmentManager.beginTransaction(); // begin transaction + commit it
             transaction.add(R.id.fragment_container, allFragment).commit();
@@ -149,11 +150,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * @effects : NAVIGATION
-     *      on user click a drawer item
-     *      => navigate to a fragment/ activity + change toolbar title/subtitle
      * @param item: MenuItem
-     * @return  true (if false cant press)
+     * @return true (if false cant press)
+     * @effects : NAVIGATION
+     * on user click a drawer item
+     * => navigate to a fragment/ activity + change toolbar title/subtitle
      */
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -173,7 +174,7 @@ public class MainActivity extends AppCompatActivity
             navigateToFragment(profileFragment, "MY GUIDES");
         } else if (id == R.id.nav_saved_guides) {
             navigateToFragment(savedGuidesFragment, "SAVED GUIDES");
-        }else if (id == R.id.nav_log_out) {
+        } else if (id == R.id.nav_log_out) {
             // Sign user out of Firebase and navigate back to login activity
             mAuth.signOut();
             startActivity(new Intent(MainActivity.this, LogInActivity.class));
@@ -190,8 +191,8 @@ public class MainActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
 
         // Pick image as profile picture
-        if(requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
-                && data != null && data.getData() != null ) {
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
+                && data != null && data.getData() != null) {
             // get image path
             filePath = data.getData();
             try {
@@ -209,7 +210,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * @effects: handle drawer nav for guide list
      */
-    public void navigateToFragment (Fragment fragment, String tag) {
+    public void navigateToFragment(Fragment fragment, String tag) {
         transaction = fragmentManager.beginTransaction();
         transaction.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right); // Animation
         transaction.replace(R.id.fragment_container, fragment, tag).commit();
@@ -218,7 +219,7 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * @effects: handle nav for guide details
-     *  used in {@code GuideListFragment.onViewCreated.adapter && this.setUpFab}
+     * used in {@code GuideListFragment.onViewCreated.adapter && this.setUpFab}
      */
     public void makeTransaction(Fragment fragment, String tag, String fragName, Guide guide) {
         Bundle args = new Bundle();
@@ -235,30 +236,30 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * @effects: Helper method to set action bar title and subtitle
-     *  used ib {@code this.onCreate && GuideListFragment.onResume}
      * @param title
      * @param subtitle
+     * @effects: Helper method to set action bar title and subtitle
+     * used ib {@code this.onCreate && GuideListFragment.onResume}
      */
-    public void setActionBarInfo (String title, String subtitle) {
+    public void setActionBarInfo(String title, String subtitle) {
         ab.setTitle(title);
         ab.setSubtitle(subtitle);
     }
 
     /**
      * @effects: setting up the tool bar
-     *  used in {@code this.onCreate}
+     * used in {@code this.onCreate}
      */
-    private void setUpToolBar () {
+    private void setUpToolBar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
     }
 
-            /**
-             * @effects: set up floating action button ( create new guide )
-             *  used in {@code this.onCreate}
-             */
-    private void setUpFab () {
+    /**
+     * @effects: set up floating action button ( create new guide )
+     * used in {@code this.onCreate}
+     */
+    private void setUpFab() {
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -270,7 +271,7 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private void setUpDrawer () {
+    private void setUpDrawer() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -279,33 +280,37 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
     }
 
-    public String getUserId () {
+    public String getUserId() {
         return mAuth.currentUser().getUid();
     }
-    public String getUserEmail () { return mAuth.currentUser().getEmail(); }
+
+    public String getUserEmail() {
+        return mAuth.currentUser().getEmail();
+    }
 
     private void setUpDrawerInfo() {
         userName.setText(mAuth.currentUser().getUid());
         userEmail.setText(mAuth.currentUser().getEmail());
     }
 
-    private void setUpNavigationView () {
+    private void setUpNavigationView() {
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
+
     //
-    void showErrorDialog (String title, String message) {
+    void showErrorDialog(String title, String message) {
         ErrorFragment newFragment = ErrorFragment.newInstance(
                 title, message);
         newFragment.show(getSupportFragmentManager(), "dialog");
     }
 
-    public void doPositiveClick () {
+    public void doPositiveClick() {
         // positive click on the error dialog
     }
 
     public void hideKeyboard(View view) {
-        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
         try {
             inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
         } catch (NullPointerException e) {
@@ -314,74 +319,74 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-            public FloatingActionButton getFab() {
-                return fab;
-            }
+    public FloatingActionButton getFab() {
+        return fab;
+    }
 
-            public ProgressBar getProgressBar() {
-                return progressBar;
-            }
+    public ProgressBar getProgressBar() {
+        return progressBar;
+    }
 
-            public ActionBar getAb() {
-                return ab;
-            }
+    public ActionBar getAb() {
+        return ab;
+    }
 
-            public View gethView() {
-                return hView;
-            }
+    public View gethView() {
+        return hView;
+    }
 
-            public void setNavMenuItemThemeColors(int color){
-                //Setting default colors for menu item Text and Icon
-                int navDefaultTextColor = Color.parseColor("#202020");
-                int navDefaultIconColor = Color.parseColor("#737373");
+    public void setNavMenuItemThemeColors(int color) {
+        //Setting default colors for menu item Text and Icon
+        int navDefaultTextColor = Color.parseColor("#202020");
+        int navDefaultIconColor = Color.parseColor("#737373");
 
-                //Defining ColorStateList for menu item Text
-                ColorStateList navMenuTextList = new ColorStateList(
-                        new int[][]{
-                                new int[]{android.R.attr.state_checked},
-                                new int[]{android.R.attr.state_enabled},
-                                new int[]{android.R.attr.state_pressed},
-                                new int[]{android.R.attr.state_focused},
-                                new int[]{android.R.attr.state_pressed}
-                        },
-                        new int[] {
-                                color,
-                                navDefaultTextColor,
-                                navDefaultTextColor,
-                                navDefaultTextColor,
-                                navDefaultTextColor
-                        }
-                );
+        //Defining ColorStateList for menu item Text
+        ColorStateList navMenuTextList = new ColorStateList(
+                new int[][]{
+                        new int[]{android.R.attr.state_checked},
+                        new int[]{android.R.attr.state_enabled},
+                        new int[]{android.R.attr.state_pressed},
+                        new int[]{android.R.attr.state_focused},
+                        new int[]{android.R.attr.state_pressed}
+                },
+                new int[]{
+                        color,
+                        navDefaultTextColor,
+                        navDefaultTextColor,
+                        navDefaultTextColor,
+                        navDefaultTextColor
+                }
+        );
 
-                //Defining ColorStateList for menu item Icon
-                ColorStateList navMenuIconList = new ColorStateList(
-                        new int[][]{
-                                new int[]{android.R.attr.state_checked},
-                                new int[]{android.R.attr.state_enabled},
-                                new int[]{android.R.attr.state_pressed},
-                                new int[]{android.R.attr.state_focused},
-                                new int[]{android.R.attr.state_pressed}
-                        },
-                        new int[] {
-                                color,
-                                navDefaultIconColor,
-                                navDefaultIconColor,
-                                navDefaultIconColor,
-                                navDefaultIconColor
-                        }
-                );
+        //Defining ColorStateList for menu item Icon
+        ColorStateList navMenuIconList = new ColorStateList(
+                new int[][]{
+                        new int[]{android.R.attr.state_checked},
+                        new int[]{android.R.attr.state_enabled},
+                        new int[]{android.R.attr.state_pressed},
+                        new int[]{android.R.attr.state_focused},
+                        new int[]{android.R.attr.state_pressed}
+                },
+                new int[]{
+                        color,
+                        navDefaultIconColor,
+                        navDefaultIconColor,
+                        navDefaultIconColor,
+                        navDefaultIconColor
+                }
+        );
 
-                navigationView.setItemTextColor(navMenuTextList);
-                navigationView.setItemIconTintList(navMenuIconList);
-            }
+        navigationView.setItemTextColor(navMenuTextList);
+        navigationView.setItemIconTintList(navMenuIconList);
+    }
 
-            public void changeUIColors(int mainColor, int gradient) {
-                setNavMenuItemThemeColors(getResources().getColor(mainColor));
-                ab.setBackgroundDrawable(new ColorDrawable(getResources().getColor(mainColor)));
-                hView.setBackgroundResource(gradient);
-            }
+    public void changeUIColors(int mainColor, int gradient) {
+        setNavMenuItemThemeColors(getResources().getColor(mainColor));
+        ab.setBackgroundDrawable(new ColorDrawable(getResources().getColor(mainColor)));
+        hView.setBackgroundResource(gradient);
+    }
 
-            public Uri getFilePath() {
-                return filePath;
-            }
-        }
+    public Uri getFilePath() {
+        return filePath;
+    }
+}
